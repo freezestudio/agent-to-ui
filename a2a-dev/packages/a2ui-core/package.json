@@ -1,0 +1,24 @@
+{
+  "name": "@a2a-dev/a2ui-core",
+  "version": "0.1.0",
+  "private": true,
+  "files": ["dist"],
+  "type": "module",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check",
+    "lint": "vp lint",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2"
+  }
+}
