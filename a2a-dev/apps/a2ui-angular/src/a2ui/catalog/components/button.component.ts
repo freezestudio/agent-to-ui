@@ -1,11 +1,15 @@
-import { Component, signal, inject, ViewContainerRef, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, signal, inject, ViewChild, ViewContainerRef, OnInit, AfterViewInit, ChangeDetectionStrategy } from "@angular/core";
 import { ChildRendererService } from "../../renderer/renderer.service.js";
 import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
 
 @Component({
   selector: "a2ui-button",
   standalone: true,
-  template: `<button class="a2ui-button" [class.primary]="variant === 'primary'" [class.borderless]="variant === 'borderless'" (click)="onClick()"></button>`,
+  template: `
+    <button class="a2ui-button" [class.primary]="variant === 'primary'" [class.borderless]="variant === 'borderless'" (click)="onClick()">
+      <ng-container #childContainer></ng-container>
+    </button>
+  `,
   styles: [`
     .a2ui-button { padding: 8px 20px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; font-size: 0.95rem; }
     .a2ui-button:hover { background: #f5f5f5; }
@@ -16,25 +20,32 @@ import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent implements OnInit, AfterViewInit {
   private childRenderer = inject(ChildRendererService);
   private renderer = inject(A2uiRendererService);
-  private vcr = inject(ViewContainerRef);
+
+  @ViewChild("childContainer", { read: ViewContainerRef }) childContainer!: ViewContainerRef;
 
   surfaceIdValue = signal("");
   propsSignal = signal<Record<string, unknown>>({});
   variant = "default";
+  private childId = "";
 
   ngOnInit(): void {
-    this.variant = (this.propsSignal()["variant"] as string) ?? "default";
-    const childId = this.propsSignal()["child"] as string;
-    if (childId) {
-      this.childRenderer.renderChild(this.vcr, this.surfaceIdValue(), childId);
+    const props = this.propsSignal();
+    this.variant = (props["variant"] as string) ?? "default";
+    this.childId = (props["child"] as string) ?? "";
+  }
+
+  ngAfterViewInit(): void {
+    if (this.childId && this.childContainer) {
+      this.childRenderer.renderChild(this.childContainer, this.surfaceIdValue(), this.childId);
     }
   }
 
   onClick(): void {
-    const action = this.propsSignal()["action"] as any;
+    const props = this.propsSignal();
+    const action = props["action"] as any;
     if (action?.event) {
       this.renderer.onAction.next({
         version: "1.0",

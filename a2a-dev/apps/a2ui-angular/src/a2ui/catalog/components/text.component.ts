@@ -1,22 +1,19 @@
 /**
  * A2UI Text 组件（Angular 实现）
  *
- * 根据 v1.0 规范：
- * - body（默认）：使用 markdown-it 渲染 Markdown → innerHTML
- * - caption：纯文本，使用 <em> 标签
- *
- * @packageDocumentation
+ * body（默认）：使用 markdown-it 渲染 Markdown → innerHTML
+ * caption：纯文本，使用 <em> 标签
  */
 
-import { Component, computed, effect, signal, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy, effect } from "@angular/core";
 import { DefaultMarkdownRenderer } from "../../../markdown/markdown.service.js";
 
 @Component({
   selector: "a2ui-text",
   standalone: true,
   template: `
-    @if (variant() === 'caption') {
-      <em class="a2ui-text caption">{{ text() }}</em>
+    @if (variantValue() === 'caption') {
+      <em class="a2ui-text caption">{{ textValue() }}</em>
     } @else {
       <span class="a2ui-text body" [innerHTML]="renderedHtml()"></span>
     }
@@ -30,31 +27,33 @@ import { DefaultMarkdownRenderer } from "../../../markdown/markdown.service.js";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextComponent {
+export class TextComponent implements OnInit {
   private mdRenderer = inject(DefaultMarkdownRenderer);
 
+  /** 由 ComponentHostComponent 设置的原始属性 */
+  propsSignal = signal<Record<string, unknown>>({});
+
+  /** 组件内部状态 */
   textValue = signal("");
   variantValue = signal<"body" | "caption">("body");
-
-  /** 计算属性：文本内容 */
-  text = computed(() => this.textValue());
-  /** 计算属性：变体 */
-  variant = computed(() => this.variantValue());
-
-  /** 渲染后的 HTML（仅 Markdown 变体使用） */
   renderedHtml = signal("");
 
   /** 渲染请求 ID（用于竞态控制） */
   private renderRequestId = 0;
 
+  ngOnInit(): void {
+    // 从 propsSignal 中提取 Text 组件的特定属性
+    const props = this.propsSignal();
+    this.textValue.set(String(props["text"] ?? ""));
+    this.variantValue.set((props["variant"] as "body" | "caption") ?? "body");
+  }
+
   constructor() {
-    // 当 text 变化时，异步渲染 Markdown
+    // 监听 text 变化 → 异步渲染 Markdown
     effect(() => {
-      if (this.variant() === "caption") return;
-
-      const rawText = this.text();
+      if (this.variantValue() === "caption") return;
+      const rawText = this.textValue();
       const requestId = ++this.renderRequestId;
-
       this.mdRenderer.render(rawText).then((html: string) => {
         if (requestId === this.renderRequestId) {
           this.renderedHtml.set(html);

@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy } from "@angular/core";
+import { Component, signal, OnInit, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "a2ui-image",
@@ -15,10 +15,18 @@ import { Component, signal, ChangeDetectionStrategy } from "@angular/core";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageComponent {
+export class ImageComponent implements OnInit {
   propsSignal = signal<Record<string, unknown>>({});
-  get url(): string { return String(this.propsSignal()["url"] ?? ""); }
-  get alt(): string { return String(this.propsSignal()["description"] ?? ""); }
-  get fit(): string { return (this.propsSignal()["fit"] as string) ?? "fill"; }
-  get variant(): string { return (this.propsSignal()["variant"] as string) ?? "mediumFeature"; }
+  url = "";
+  alt = "";
+  fit = "fill";
+  variant = "mediumFeature";
+
+  ngOnInit(): void {
+    const props = this.propsSignal();
+    this.url = String(props["url"] ?? "");
+    this.alt = String(props["description"] ?? "");
+    this.fit = (props["fit"] as string) ?? "fill";
+    this.variant = (props["variant"] as string) ?? "mediumFeature";
+  }
 }
