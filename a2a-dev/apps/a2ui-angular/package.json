@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm ng serve --port 5173",
-    "build": "pnpm ng build",
-    "check": "pnpm ng build --configuration development",
-    "start": "pnpm ng serve --port 5173"
+    "dev": "pnpm exec ng serve --port 5173",
+    "build": "pnpm exec ng build",
+    "check": "pnpm exec ng build --configuration development",
+    "start": "pnpm exec ng serve --port 5173"
   },
   "dependencies": {
     "@angular/core": "^22.0.0",

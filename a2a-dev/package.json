@@ -10,7 +10,9 @@
     "start:server": "vp run @a2a-dev/example#start:server",
     "start:client": "vp run @a2a-dev/example#start:client",
     "start": "vp run @a2a-dev/example#start:server",
-    "demo": "vp run @a2a-dev/example#demo"
+    "demo": "vp run @a2a-dev/example#demo",
+    "start:agent": "vp run @a2a-dev/a2ui-agent#start",
+    "start:angular": "cd apps/a2ui-angular && pnpm exec ng serve --port 5173"
   },
   "devDependencies": {
     "vite-plus": "catalog:"
