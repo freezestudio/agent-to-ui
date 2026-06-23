@@ -1,0 +1,21 @@
+{
+  "name": "@a2a-dev/example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "tsx src/demo.ts",
+    "demo:p1": "tsx src/demo-p1.ts",
+    "start:server": "tsx src/server.ts",
+    "start:client": "tsx src/client.ts",
+    "start": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@a2a-dev/client": "workspace:*",
+    "@a2a-dev/core": "workspace:*",
+    "@a2a-dev/server": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
