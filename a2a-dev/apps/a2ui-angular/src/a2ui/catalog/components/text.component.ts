@@ -9,7 +9,7 @@
  */
 
 import { Component, computed, effect, signal, ChangeDetectionStrategy, inject } from "@angular/core";
-import { DefaultMarkdownRenderer } from "../../markdown/markdown.service.js";
+import { DefaultMarkdownRenderer } from "../../../markdown/markdown.service.js";
 
 @Component({
   selector: "a2ui-text",
@@ -31,12 +31,15 @@ import { DefaultMarkdownRenderer } from "../../markdown/markdown.service.js";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextComponent {
-  private md = inject(DefaultMarkdownRenderer);
+  private mdRenderer = inject(DefaultMarkdownRenderer);
 
-  /** 文本内容 */
-  text = signal("", { alias: "text" });
-  /** 文本变体：body（Markdown）或 caption（纯文本） */
-  variant = signal<"body" | "caption">("body");
+  textValue = signal("");
+  variantValue = signal<"body" | "caption">("body");
+
+  /** 计算属性：文本内容 */
+  text = computed(() => this.textValue());
+  /** 计算属性：变体 */
+  variant = computed(() => this.variantValue());
 
   /** 渲染后的 HTML（仅 Markdown 变体使用） */
   renderedHtml = signal("");
@@ -52,8 +55,7 @@ export class TextComponent {
       const rawText = this.text();
       const requestId = ++this.renderRequestId;
 
-      this.md.render(rawText).then((html) => {
-        // 只应用最新的渲染结果
+      this.mdRenderer.render(rawText).then((html: string) => {
         if (requestId === this.renderRequestId) {
           this.renderedHtml.set(html);
         }

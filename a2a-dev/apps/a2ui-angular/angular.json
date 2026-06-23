@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "a2ui-angular": {
+      "projectType": "application",
+      "root": ".",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.json",
+            "externalDependencies": [],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [{ "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" }],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": { "proxyConfig": "proxy.conf.json" },
+          "configurations": {
+            "production": { "buildTarget": "a2ui-angular:build:production" },
+            "development": { "buildTarget": "a2ui-angular:build:development" }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}
