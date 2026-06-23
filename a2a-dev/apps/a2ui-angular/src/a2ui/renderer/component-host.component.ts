@@ -2,52 +2,60 @@
  * A2UI 组件宿主组件
  *
  * 根据组件类型动态解析并渲染对应的 Angular 组件。
- * 递归处理容器组件的子组件。
+ * 负责递归渲染容器组件的子组件。
  *
  * @packageDocumentation
  */
 
-import { Component, computed, inject, input } from "@angular/core";
-import { NgComponentOutlet } from "@angular/common";
+import { Component, computed, inject, input, ViewContainerRef, OnInit, OnDestroy } from "@angular/core";
 import { A2uiRendererService } from "./a2ui-renderer.service.js";
 import { CatalogService } from "../catalog/catalog.js";
 
 @Component({
   selector: "a2ui-component-host",
   standalone: true,
-  imports: [NgComponentOutlet],
-  host: { style: "display: contents;" },
-  template: `
-    @let compType = resolvedComponentType();
-    @let model = componentModel();
-
-    @if (compType && model) {
-      <ng-container
-        *ngComponentOutlet="compType; inputs: model.properties"
-      />
-    }
-  `,
+  template: `<!-- 子组件通过 ViewContainerRef 动态创建 -->`,
 })
-export class ComponentHostComponent {
+export class ComponentHostComponent implements OnInit, OnDestroy {
   private renderer = inject(A2uiRendererService);
   private catalog = inject(CatalogService);
+  private viewContainer = inject(ViewContainerRef);
 
-  /** 所属 Surface ID */
   surfaceId = input.required<string>();
-  /** 要渲染的组件 ID */
   componentId = input.required<string>();
 
-  /** 获取组件模型 */
-  componentModel = computed(() => {
-    return this.renderer
-      .getSurface(this.surfaceId())
-      ?.componentsModel.get(this.componentId());
-  });
+  private childHosts: ComponentHostComponent[] = [];
 
-  /** 根据组件类型解析对应的 Angular 组件 */
-  resolvedComponentType = computed(() => {
-    const model = this.componentModel();
-    if (!model) return null;
-    return this.catalog.get(model.type);
-  });
+  ngOnInit(): void {
+    this.renderComponent();
+  }
+
+  ngOnDestroy(): void {
+    this.viewContainer.clear();
+  }
+
+  private renderComponent(): void {
+    const surface = this.renderer.getSurface(this.surfaceId());
+    if (!surface) return;
+
+    const model = surface.componentsModel.get(this.componentId());
+    if (!model) return;
+
+    const componentType = this.catalog.get(model.type);
+    if (!componentType) {
+      console.warn(`未知组件类型: ${model.type}`);
+      return;
+    }
+
+    // 创建组件实例
+    const ref = this.viewContainer.createComponent(componentType, {
+      injector: this.viewContainer.injector,
+    });
+
+    // 设置输入属性
+    if (ref.instance) {
+      (ref.instance as any).surfaceIdValue?.set?.(this.surfaceId());
+      (ref.instance as any).propsSignal?.set?.(model.properties);
+    }
+  }
 }

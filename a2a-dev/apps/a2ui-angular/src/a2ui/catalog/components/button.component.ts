@@ -1,16 +1,11 @@
-import { Component, computed, inject, signal, ChangeDetectionStrategy } from "@angular/core";
-import { ComponentHostComponent } from "../../renderer/component-host.component.js";
+import { Component, signal, inject, ViewContainerRef, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { ChildRendererService } from "../../renderer/renderer.service.js";
 import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
 
 @Component({
   selector: "a2ui-button",
   standalone: true,
-  imports: [ComponentHostComponent],
-  template: `
-    <button class="a2ui-button" [class.primary]="variantValue() === 'primary'" [class.borderless]="variantValue() === 'borderless'" (click)="onClick()">
-      <a2ui-component-host [surfaceId]="surfaceIdValue()" [componentId]="childId()" />
-    </button>
-  `,
+  template: `<button class="a2ui-button" [class.primary]="variant === 'primary'" [class.borderless]="variant === 'borderless'" (click)="onClick()"></button>`,
   styles: [`
     .a2ui-button { padding: 8px 20px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; font-size: 0.95rem; }
     .a2ui-button:hover { background: #f5f5f5; }
@@ -21,28 +16,35 @@ import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ButtonComponent {
+export class ButtonComponent implements OnInit {
+  private childRenderer = inject(ChildRendererService);
   private renderer = inject(A2uiRendererService);
+  private vcr = inject(ViewContainerRef);
 
   surfaceIdValue = signal("");
-  childId = computed(() => String(this.propsSignal()["child"] ?? ""));
-  variantValue = computed(() => (this.propsSignal()["variant"] as string) ?? "default");
-  actionValue = computed(() => this.propsSignal()["action"]);
   propsSignal = signal<Record<string, unknown>>({});
+  variant = "default";
+
+  ngOnInit(): void {
+    this.variant = (this.propsSignal()["variant"] as string) ?? "default";
+    const childId = this.propsSignal()["child"] as string;
+    if (childId) {
+      this.childRenderer.renderChild(this.vcr, this.surfaceIdValue(), childId);
+    }
+  }
 
   onClick(): void {
-    const action = this.actionValue();
-    if (action && typeof action === "object" && "event" in action) {
-      const evt = (action as any).event;
+    const action = this.propsSignal()["action"] as any;
+    if (action?.event) {
       this.renderer.onAction.next({
         version: "1.0",
         action: {
-          name: evt.name,
+          name: action.event.name,
           surfaceId: this.surfaceIdValue(),
           sourceComponentId: "button",
           timestamp: new Date().toISOString(),
-          context: evt.context ?? {},
-          wantResponse: evt.wantResponse,
+          context: action.event.context ?? {},
+          wantResponse: action.event.wantResponse,
         },
       });
     }

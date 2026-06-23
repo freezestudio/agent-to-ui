@@ -1,18 +1,27 @@
-import { Component, computed, signal, ChangeDetectionStrategy } from "@angular/core";
-import { ComponentHostComponent } from "../../renderer/component-host.component.js";
+import { Component, signal, inject, ViewContainerRef, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { ChildRendererService } from "../../renderer/renderer.service.js";
 
 @Component({
   selector: "a2ui-row",
   standalone: true,
-  imports: [ComponentHostComponent],
-  template: `<div class="a2ui-row" [style.justifyContent]="justifyCss()" [style.alignItems]="alignCss()">@for (childId of childIds(); track childId) {<a2ui-component-host [surfaceId]="surfaceIdValue()" [componentId]="childId" />}</div>`,
+  template: `<div class="a2ui-row" [style.justifyContent]="justify" [style.alignItems]="align"><!-- 子组件通过 ViewContainerRef 动态创建 --></div>`,
   styles: [`.a2ui-row { display: flex; flex-direction: row; gap: 8px; }`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RowComponent {
+export class RowComponent implements OnInit {
+  private renderer = inject(ChildRendererService);
+  private vcr = inject(ViewContainerRef);
+
   surfaceIdValue = signal("");
   propsSignal = signal<Record<string, unknown>>({});
-  childIds = computed(() => { const c = this.propsSignal()["children"]; return Array.isArray(c) ? c as string[] : []; });
-  justifyCss = computed(() => { const m: Record<string, string> = { start: "flex-start", end: "flex-end", spaceBetween: "space-between", spaceAround: "space-around", spaceEvenly: "space-evenly" }; return m[this.propsSignal()["justify"] as string] ?? "flex-start"; });
-  alignCss = computed(() => { const m: Record<string, string> = { start: "flex-start", end: "flex-end" }; return m[this.propsSignal()["align"] as string] ?? "stretch"; });
+  justify = "flex-start";
+  align = "stretch";
+
+  ngOnInit(): void {
+    const children = this.propsSignal()["children"];
+    if (Array.isArray(children)) {
+      this.justify = ((this.propsSignal()["justify"] as string) ?? "start").replace(/^./, m => `flex-${m}` === "flex-start" ? "flex-start" : m);
+      this.renderer.renderChildren(this.vcr, this.surfaceIdValue(), children as string[]);
+    }
+  }
 }
