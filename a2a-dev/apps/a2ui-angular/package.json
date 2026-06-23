@@ -1,0 +1,38 @@
+{
+  "name": "@a2a-dev/a2ui-angular",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "check": "vp check",
+    "preview": "vp preview",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "@angular/core": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@a2a-dev/core": "workspace:*",
+    "@a2a-dev/client": "workspace:*",
+    "@a2a-dev/a2ui-core": "workspace:*",
+    "@a2a-dev/a2ui-renderer": "workspace:*",
+    "@a2a-dev/a2ui-extension": "workspace:*",
+    "markdown-it": "^14.2.0",
+    "dompurify": "^3.4.10",
+    "pino": "^9.6.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@angular/compiler-cli": "^22.0.0",
+    "@angular/build": "^22.0.0",
+    "@angular/cli": "^22.0.0",
+    "@types/markdown-it": "^14.1.2",
+    "@types/dompurify": "^3.2.0",
+    "typescript": "~5.9.0"
+  }
+}
