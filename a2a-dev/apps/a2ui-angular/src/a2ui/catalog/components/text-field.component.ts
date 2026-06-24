@@ -1,3 +1,10 @@
+/**
+ * A2UI TextField 组件
+ *
+ * 文本输入框，支持 DynamicString 数据绑定。
+ * 用户输入自动写回到 Surface 的 DataModel（如果 value 绑定了路径）。
+ */
+
 import { Component, signal, ChangeDetectionStrategy } from "@angular/core";
 import { BaseComponent } from "./base.component.js";
 
@@ -5,7 +12,7 @@ import { BaseComponent } from "./base.component.js";
   selector: "a2ui-text-field",
   standalone: true,
   template: `<div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:.85rem;color:#555">{{label}}</label>@if(isTextarea){<textarea class="a2ui-tf-input" [placeholder]="placeholder" [value]="inputValue()" (input)="onInput($event)" style="min-height:80px;resize:vertical"></textarea>}@else{<input class="a2ui-tf-input" [type]="inputType" [placeholder]="placeholder" [value]="inputValue()" (input)="onInput($event)" />}</div>`,
-  styles: [`.a2ui-tf-input{padding:8px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:.95rem;outline:none;width:100%}.a2ui-tf-input:focus{border-color:#1a1a2e}`],
+  styles: [`.a2ui-tf-input{padding:8px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:.95rem;outline:none;width:100%;box-sizing:border-box}.a2ui-tf-input:focus{border-color:#1a1a2e}`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextFieldComponent extends BaseComponent {
@@ -15,5 +22,16 @@ export class TextFieldComponent extends BaseComponent {
   inputType = ({ shortText: "text", longText: "text", number: "number", obscured: "password" } as Record<string, string>)[(this.props["variant"] as string) ?? "shortText"] ?? "text";
   inputValue = signal(this.binding.resolveString(this.props["value"], this.surfaceId));
 
-  onInput(e: Event): void { this.inputValue.set((e.target as HTMLInputElement).value); }
+  /** value 绑定的 DataModel 路径（如 "/login/username"） */
+  private valuePath = this.binding.resolveBindingPath(this.props["value"]);
+
+  onInput(e: Event): void {
+    const val = (e.target as HTMLInputElement).value;
+    this.inputValue.set(val);
+    // 如果 value 绑定了 DataModel 路径，写回
+    if (this.valuePath) {
+      const surface = this.renderer.getSurface?.(this.surfaceId);
+      surface?.dataModel.set(this.valuePath, val);
+    }
+  }
 }

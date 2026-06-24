@@ -10,5 +10,16 @@ import { BaseComponent } from "./base.component.js";
 export class CheckBoxComponent extends BaseComponent {
   label = this.binding.resolveString(this.props["label"], this.surfaceId);
   checked = signal(this.binding.resolveBoolean(this.props["value"], this.surfaceId));
-  toggle(): void { this.checked.update(v => !v); }
+  private valuePath = this.binding.resolveBindingPath(this.props["value"]);
+
+  toggle(): void {
+    this.checked.update(v => {
+      const next = !v;
+      if (this.valuePath) {
+        const surface = this.renderer.getSurface(this.surfaceId);
+        surface?.dataModel.set(this.valuePath, next);
+      }
+      return next;
+    });
+  }
 }

@@ -22,5 +22,14 @@ export class SliderComponent extends BaseComponent {
   }
   step = this.calcStep();
   currentValue = signal(this.binding.resolveNumber(this.props["value"], this.surfaceId));
-  onInput(e: Event): void { this.currentValue.set(Number((e.target as HTMLInputElement).value)); }
+  private valuePath = this.binding.resolveBindingPath(this.props["value"]);
+
+  onInput(e: Event): void {
+    const val = Number((e.target as HTMLInputElement).value);
+    this.currentValue.set(val);
+    if (this.valuePath) {
+      const surface = this.renderer.getSurface(this.surfaceId);
+      surface?.dataModel.set(this.valuePath, val);
+    }
+  }
 }

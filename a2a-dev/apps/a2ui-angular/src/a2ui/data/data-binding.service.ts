@@ -89,6 +89,20 @@ export class DataBindingService {
   /**
    * 通过 JSON Pointer 路径从 DataModel 获取值
    */
+  /**
+   * 解析 DataBinding 的路径（如果值为绑定对象）
+   * 用于组件写回 DataModel 时确定写入路径
+   *
+   * @param value 属性值
+   * @returns JSON Pointer 路径，如果不是绑定则返回 null
+   */
+  resolveBindingPath(value: unknown): string | null {
+    if (this.isDataBinding(value)) {
+      return (value as { path: string }).path;
+    }
+    return null;
+  }
+
   private resolveDataBinding(binding: unknown, surfaceId: string): unknown {
     const path = (binding as { path: string }).path;
     const surface = this.renderer.getSurface(surfaceId);

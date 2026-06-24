@@ -14,11 +14,16 @@ export class ChoicePickerComponent extends BaseComponent {
   isMulti = (this.props["variant"] as string) === "multipleSelection";
   optionList: Array<{ label: string; value: string }> = Array.isArray(this.props["options"]) ? (this.props["options"] as any[]).map((o: any) => ({ label: this.binding.resolveString(o.label, this.surfaceId), value: String(o.value ?? "") })) : [];
   selectedValues = signal<Set<string>>(new Set());
+  private valuePath = this.binding.resolveBindingPath(this.props["value"]);
 
   toggle(value: string): void {
     this.selectedValues.update(s => {
       const next = new Set(s);
       if (next.has(value)) { next.delete(value); } else { if (this.isMulti) next.add(value); else return new Set([value]); }
+      if (this.valuePath) {
+        const surface = this.renderer.getSurface(this.surfaceId);
+        surface?.dataModel.set(this.valuePath, [...next]);
+      }
       return next;
     });
   }

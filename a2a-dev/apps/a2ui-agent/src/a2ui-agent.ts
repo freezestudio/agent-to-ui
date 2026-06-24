@@ -129,10 +129,17 @@ const SCENARIO_KEYS = Object.keys(SCENARIOS);
 export class A2UIDemoAgent implements AgentExecutor {
   async execute(context: RequestContext, eventQueue: EventQueue): Promise<void> {
     const text = context.message.parts[0]?.text ?? "";
-    // 关键词匹配场景
-    const matched = SCENARIO_KEYS.find(k => text.toLowerCase().includes(k));
-    const scenario = matched ?? "hello";
-    const msgs = SCENARIOS[scenario];
+
+    // 检测是否是 action 事件（来自客户端的 DataPart）
+    const actionPart = context.message.parts.find(p => p.mediaType === A2UI_MIME_TYPE);
+    if (actionPart?.data) {
+      const actionData = actionPart.data as { action?: { name: string; context?: Record<string, unknown> } };
+      const actionName = actionData?.action?.name;
+      if (actionName) {
+        await this.handleAction(actionName, actionData.action?.context, eventQueue);
+        return;
+      }
+    }
 
     logger.info({ scenario, text }, "匹配到场景");
 
@@ -164,6 +171,66 @@ export class A2UIDemoAgent implements AgentExecutor {
 
     eventQueue.complete();
     logger.info({ taskId: context.task!.id, scenario }, "任务完成");
+  }
+
+  /**
+   * 处理客户端发来的 action 事件
+   *
+   * 识别预设的 action 名称并返回对应响应消息。
+   * 当前支持：login / confirm_booking
+   */
+  private async handleAction(
+    name: string,
+    context: Record<string, unknown> | undefined,
+    eventQueue: EventQueue,
+  ): Promise<void> {
+    eventQueue.push({
+      taskId: crypto.randomUUID(),
+      status: { state: TaskState.TASK_STATE_WORKING, message: { role: Role.ROLE_AGENT, parts: [{ text: `处理操作: ${name}` }], messageId: crypto.randomUUID() } },
+    });
+
+    let responseMsgs: A2uiMessage[] = [];
+
+    if (name === "login") {
+      responseMsgs = [
+        { version: "1.0", createSurface: { surfaceId: "main", catalogId: BASIC_CATALOG } },
+        { version: "1.0", updateComponents: { surfaceId: "main", components: [
+          { id: "root", component: "Column", children: ["msg"], align: "center" },
+          { id: "msg", component: "Text", text: `✅ 登录成功！欢迎 ${String(context?.username ?? "用户")}` },
+        ] } },
+      ];
+    } else if (name === "confirm_booking") {
+      const datetime = String(context?.datetime ?? "待定");
+      const guests = String(context?.guests ?? "");
+      responseMsgs = [
+        { version: "1.0", createSurface: { surfaceId: "main", catalogId: BASIC_CATALOG } },
+        { version: "1.0", updateComponents: { surfaceId: "main", components: [
+          { id: "root", component: "Column", children: ["title", "detail"], align: "center" },
+          { id: "title", component: "Text", text: "✅ **预订成功**" },
+          { id: "detail", component: "Text", text: `时间: ${datetime}\n人数: ${guests}` },
+        ] } },
+      ];
+    } else {
+      responseMsgs = [
+        { version: "1.0", createSurface: { surfaceId: "main", catalogId: BASIC_CATALOG } },
+        { version: "1.0", updateComponents: { surfaceId: "main", components: [
+          { id: "root", component: "Text", text: `收到操作: ${name}，但未定义处理逻辑` },
+        ] } },
+      ];
+    }
+
+    eventQueue.push({
+      taskId: crypto.randomUUID(),
+      artifact: {
+        artifactId: crypto.randomUUID(), name: "a2ui-action-response",
+        parts: [{ data: { a2uiMessages: responseMsgs }, mediaType: A2UI_MIME_TYPE }],
+        lastChunk: true,
+      },
+    });
+
+    eventQueue.push({ taskId: crypto.randomUUID(), status: { state: TaskState.TASK_STATE_COMPLETED, timestamp: new Date().toISOString() } });
+    eventQueue.complete();
+    logger.info({ action: name }, "Action 处理完成");
   }
 
   async cancel(context: RequestContext, eventQueue: EventQueue): Promise<void> {

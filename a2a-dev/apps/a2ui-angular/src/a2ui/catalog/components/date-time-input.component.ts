@@ -23,6 +23,19 @@ export class DateTimeInputComponent extends BaseComponent {
     }
   }
 
-  onDateChange(e: Event): void { this.dateValue.set((e.target as HTMLInputElement).value); }
-  onTimeChange(e: Event): void { this.timeValue.set((e.target as HTMLInputElement).value); }
+  private valuePath = this.binding.resolveBindingPath(this.props["value"]);
+
+  private writeBack(): void {
+    if (!this.valuePath) return;
+    const combined = this.enableDate && this.enableTime
+      ? `${this.dateValue()}T${this.timeValue()}`
+      : this.enableDate ? this.dateValue() : this.timeValue();
+    if (combined) {
+      const surface = this.renderer.getSurface(this.surfaceId);
+      surface?.dataModel.set(this.valuePath, combined);
+    }
+  }
+
+  onDateChange(e: Event): void { this.dateValue.set((e.target as HTMLInputElement).value); this.writeBack(); }
+  onTimeChange(e: Event): void { this.timeValue.set((e.target as HTMLInputElement).value); this.writeBack(); }
 }

@@ -1,6 +1,5 @@
 import { Component, inject, ViewChild, ViewContainerRef, AfterViewInit, ChangeDetectionStrategy } from "@angular/core";
 import { ChildRendererService } from "../../renderer/renderer.service.js";
-import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
 import { BaseComponent } from "./base.component.js";
 
 @Component({
@@ -24,7 +23,6 @@ import { BaseComponent } from "./base.component.js";
 })
 export class ButtonComponent extends BaseComponent implements AfterViewInit {
   private childRenderer = inject(ChildRendererService);
-  private renderer = inject(A2uiRendererService);
   @ViewChild("childContainer", { read: ViewContainerRef }) childContainer!: ViewContainerRef;
 
   variant: string = (this.props["variant"] as string) ?? "default";
