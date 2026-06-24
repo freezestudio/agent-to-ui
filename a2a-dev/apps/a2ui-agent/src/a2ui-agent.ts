@@ -116,6 +116,56 @@ const SCENARIOS: Record<string, A2uiMessage[]> = {
       },
     },
   ],
+
+  /** form — 综合表单（展示所有交互组件 + 校验） */
+  form: [
+    { version: "1.0", createSurface: { surfaceId: "main", catalogId: BASIC_CATALOG } },
+    {
+      version: "1.0",
+      updateComponents: {
+        surfaceId: "main",
+        components: [
+          { id: "root", component: "Column", children: ["title", "name", "email", "age", "subscribe", "prefs", "submit-area"] },
+          { id: "title", component: "Text", text: "📝 **用户信息表单**", variant: "body" },
+          { id: "name", component: "TextField", label: "姓名", value: { path: "/user/name" }, checks: [{ condition: { call: "required", args: { value: { path: "/user/name" } } }, message: "姓名不能为空" }] },
+          { id: "email", component: "TextField", label: "邮箱", variant: "shortText", value: { path: "/user/email" }, checks: [{ condition: { call: "required", args: { value: { path: "/user/email" } } }, message: "邮箱不能为空" }, { condition: { call: "email", args: { value: { path: "/user/email" } } }, message: "邮箱格式不正确" }] },
+          { id: "age", component: "Slider", label: "年龄", max: 100, value: { path: "/user/age" } },
+          { id: "subscribe", component: "CheckBox", label: "订阅通知", value: { path: "/user/subscribe" } },
+          { id: "prefs", component: "ChoicePicker", label: "兴趣", options: [{ label: "技术", value: "tech" }, { label: "设计", value: "design" }, { label: "音乐", value: "music" }], value: { path: "/user/interests" }, variant: "multipleSelection", displayStyle: "chips" },
+          { id: "submit-area", component: "Row", children: ["submit-t", "submit-btn"], justify: "end" },
+          { id: "submit-t", component: "Text", text: "提交" },
+          { id: "submit-btn", component: "Button", child: "submit-t", variant: "primary", action: { event: { name: "submit_form" } } },
+        ],
+      },
+    },
+  ],
+
+  /** gallery — 多媒体画廊 */
+  gallery: [
+    { version: "1.0", createSurface: { surfaceId: "main", catalogId: BASIC_CATALOG } },
+    {
+      version: "1.0",
+      updateComponents: {
+        surfaceId: "main",
+        components: [
+          { id: "root", component: "Column", children: ["title", "div1", "img-row", "div2", "icon-row"] },
+          { id: "title", component: "Text", text: "🖼️ **多媒体画廊**", variant: "body" },
+          { id: "div1", component: "Divider", axis: "horizontal" },
+          { id: "img-row", component: "Row", children: ["img1", "img2", "img3"], justify: "spaceEvenly" },
+          { id: "img1", component: "Image", url: "https://picsum.photos/seed/a/150/150", description: "图片 A", variant: "smallFeature" },
+          { id: "img2", component: "Image", url: "https://picsum.photos/seed/b/150/150", description: "图片 B", variant: "smallFeature" },
+          { id: "img3", component: "Image", url: "https://picsum.photos/seed/c/150/150", description: "图片 C", variant: "smallFeature" },
+          { id: "div2", component: "Divider", axis: "horizontal" },
+          { id: "icon-row", component: "Row", children: ["ic1", "ic2", "ic3", "ic4", "ic5"], justify: "spaceEvenly" },
+          { id: "ic1", component: "Icon", name: "favorite" },
+          { id: "ic2", component: "Icon", name: "star" },
+          { id: "ic3", component: "Icon", name: "search" },
+          { id: "ic4", component: "Icon", name: "settings" },
+          { id: "ic5", component: "Icon", name: "home" },
+        ],
+      },
+    },
+  ],
 };
 
 const SCENARIO_KEYS = Object.keys(SCENARIOS);

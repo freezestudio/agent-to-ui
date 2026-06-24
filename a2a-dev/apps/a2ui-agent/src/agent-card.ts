@@ -54,5 +54,15 @@ export const agentCard: AgentCard = {
       description: "多媒体展示（Image + Text）",
       examples: ["media", "图片", "多媒体"],
     },
+    {
+      id: "form", name: "综合表单",
+      description: "带校验的综合表单（TextField + CheckBox + ChoicePicker + Slider）",
+      examples: ["form", "表单", "注册"],
+    },
+    {
+      id: "gallery", name: "多媒体画廊",
+      description: "图片和图标展示（Image + Icon + Divider）",
+      examples: ["gallery", "画廊", "图标"],
+    },
   ],
 };
