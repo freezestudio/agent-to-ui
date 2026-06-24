@@ -17,8 +17,12 @@ export class ChildRendererService {
 
   /**
    * 渲染多个子组件
+   *
+   * 每次渲染前清空容器，防止重复渲染导致组件堆积。
+   * 适用于容器组件（Row/Column/List/Tabs）切换子组件或数据更新的场景。
    */
   renderChildren(vcr: ViewContainerRef, surfaceId: string, childIds: string[], parentInjector?: Injector): void {
+    vcr.clear();
     for (const childId of childIds) {
       this.renderChild(vcr, surfaceId, childId, parentInjector);
     }
@@ -26,8 +30,11 @@ export class ChildRendererService {
 
   /**
    * 渲染单个子组件，通过 Injector 注入 surfaceId 和 props
+   *
+   * 每次渲染前清空容器。适用于 Card/Button/Modal 等单子组件容器。
    */
   renderChild(vcr: ViewContainerRef, surfaceId: string, childId: string, parentInjector?: Injector): void {
+    vcr.clear();
     const surface = this.renderer.getSurface(surfaceId);
     if (!surface) return;
 

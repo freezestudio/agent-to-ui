@@ -11,7 +11,16 @@ export class SliderComponent extends BaseComponent {
   label = this.binding.resolveString(this.props["label"], this.surfaceId);
   min = (this.props["min"] as number) ?? 0;
   max = (this.props["max"] as number) ?? 100;
-  step = ((this.props["steps"] as number) && ((this.props["max"] as number) - (this.props["min"] as number ?? 0)) / (this.props["steps"] as number)) ?? 1;
+
+  /** 计算步长：如果指定了 steps（离散档位数），则步长 = (max - min) / steps */
+  private calcStep(): number {
+    const steps = this.props["steps"] as number | undefined;
+    if (steps && steps > 0 && this.max > this.min) {
+      return (this.max - this.min) / steps;
+    }
+    return 1;
+  }
+  step = this.calcStep();
   currentValue = signal(this.binding.resolveNumber(this.props["value"], this.surfaceId));
   onInput(e: Event): void { this.currentValue.set(Number((e.target as HTMLInputElement).value)); }
 }
