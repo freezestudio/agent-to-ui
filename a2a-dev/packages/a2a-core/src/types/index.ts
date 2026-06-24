@@ -395,6 +395,10 @@ export interface AgentCard {
   provider?: AgentProvider;
   /** 附加元数据，扩展可通过此字段传递自定义信息 */
   metadata?: Record<string, unknown>;
+  /** 智能体的文档 URL */
+  documentationUrl?: string;
+  /** 智能体的图标 URL */
+  iconUrl?: string;
 }
 
 /**
@@ -403,16 +407,10 @@ export interface AgentCard {
  * 对应规范 §4.4.2 AgentProvider
  */
 export interface AgentProvider {
-  /** 提供商名称 */
-  name?: string;
   /** 组织名称 */
   organization?: string;
   /** 提供商网站 URL */
   url?: string;
-  /** 提供商 Logo URL */
-  logoUrl?: string;
-  /** 提供商描述 */
-  description?: string;
 }
 
 /**
@@ -496,18 +494,21 @@ export interface AgentInterface {
  * v1.0 新增，使用 JWS (RFC 7515) 和 JSON 规范化方案 JCS (RFC 8785)
  */
 export interface AgentCardSignature {
-  /** 签名类型，如 "JWS" */
-  type: string;
-  /** 签名算法，如 "RS256"、"ES256" */
-  algorithm: string;
-  /** 公钥获取 URL（JWKS 端点） */
-  keyUrl?: string;
-  /** 内联公钥（PEM 格式） */
-  publicKey?: string;
-  /** 签名字段的值（对排除 signatures 字段后的规范化 JSON 签名） */
+  /**
+   * 受保护的 JWS 头部（base64url 编码的 JSON 对象）
+   * 对应 RFC 7515 JWS Protected Header
+   */
+  protected?: string;
+  /**
+   * 未受保护的 JWS 头部
+   * 对应 RFC 7515 JWS Unprotected Header
+   */
+  header?: Record<string, unknown>;
+  /**
+   * JWS 签名字段值（base64url 编码）
+   * 对应 RFC 7515 JWS Signature
+   */
   signature: string;
-  /** 签名时间 */
-  signedAt?: string;
 }
 
 // --------------------------------------------------------------------------
@@ -531,10 +532,12 @@ export type SecurityScheme =
  * 安全要求 — 指定需要哪种安全方案及所需 OAuth 范围
  */
 export interface SecurityRequirement {
-  /** 引用的安全方案名称（对应 securitySchemes 中的键） */
-  scheme: string;
-  /** OAuth 2.0 范围列表 */
-  scopes?: string[];
+  /**
+   * 安全方案到所需范围的映射
+   * 键为安全方案名称（对应 securitySchemes 中的键），
+   * 值为该方案所需的 OAuth 2.0 范围列表
+   */
+  schemes: Record<string, string[]>;
 }
 
 /** API 密钥安全方案 — 规范 §4.5.2 */
@@ -665,6 +668,10 @@ export interface GetTaskRequest {
   taskId: string;
   /** 返回的历史消息条数（0=不返回，未设置=返回全部） */
   historyLength?: number;
+  /** 附加上下文或参数 */
+  metadata?: Record<string, unknown>;
+  /** 多租户路由标识 */
+  tenant?: string;
 }
 
 /** 列出任务请求 — 规范 §3.1.4 */
@@ -681,6 +688,8 @@ export interface ListTasksRequest {
   historyLength?: number;
   /** 是否在结果中包含制品数据（默认 false，为 true 时可能影响性能） */
   includeArtifacts?: boolean;
+  /** 按状态更新时间过滤（ISO 8601 格式），仅返回在此时间之后更新状态的任务 */
+  statusTimestampAfter?: string;
 }
 
 /** 列出任务响应 — 规范 §3.1.4 */
@@ -697,8 +706,12 @@ export interface ListTasksResponse {
 
 /** 取消任务请求 — 规范 §3.1.5 */
 export interface CancelTaskRequest {
-  /** 要取消的任务 ID */
-  taskId: string;
+  /** 要取消的任务资源 ID */
+  id: string;
+  /** 附加上下文或参数 */
+  metadata?: Record<string, unknown>;
+  /** 多租户路由标识 */
+  tenant?: string;
 }
 
 /** 订阅任务请求 — 规范 §3.1.6 */
@@ -990,27 +1003,17 @@ export const AgentCardSchema = z.object({
   signatures: z
     .array(
       z.object({
-        type: z.string().describe("签名类型，如 JWS"),
-        algorithm: z.string().describe("签名算法，如 ES256"),
-        keyUrl: z.string().url().describe("公钥获取 URL（JWKS 端点）").optional(),
-        publicKey: z.string().describe("内联公钥").optional(),
+        protected: z.string().describe("受保护的 JWS 头部（base64url 编码）").optional(),
+        header: z.record(z.string(), z.unknown()).describe("未受保护的 JWS 头部").optional(),
         signature: z.string().min(1, "签名字段不能为空"),
-        signedAt: z
-          .string()
-          .datetime({ offset: true })
-          .describe("签名时间（ISO 8601 UTC）")
-          .optional(),
       }),
     )
-    .describe("智能体卡片签名列表")
+    .describe("智能体卡片签名列表（RFC 7515 JWS 格式）")
     .optional(),
   provider: z
     .object({
-      name: z.string().optional(),
-      organization: z.string().optional(),
-      url: z.string().url("提供商 URL 格式无效").optional(),
-      logoUrl: z.string().url("Logo URL 格式无效").optional(),
-      description: z.string().optional(),
+      organization: z.string().describe("组织名称").optional(),
+      url: z.string().url("提供商 URL 格式无效").describe("提供商网站 URL").optional(),
     })
     .describe("智能体提供商信息")
     .optional(),

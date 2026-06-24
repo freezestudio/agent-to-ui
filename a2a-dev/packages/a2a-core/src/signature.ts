@@ -185,19 +185,12 @@ export function signAgentCard(
   if (keyId) protectedHeader.kid = keyId;
 
   const jws = jwsCompact(protectedHeader, canonical, privateKey);
-  const [headerB64, payloadB64, sigB64] = jws.split(".");
-
-  // 提取公钥用于 keyUrl
-  const publicKey = crypto.createPublicKey(privateKey);
-  const publicKeyPem = publicKey.export({ type: "spki", format: "pem" });
+  const [headerB64, _payloadB64, sigB64] = jws.split(".");
 
   return {
-    type: "JWS",
-    algorithm: "ES256",
-    publicKey: publicKeyPem.trim(),
-    signature: `${headerB64}.${payloadB64}.${sigB64}`,
-    signedAt: new Date().toISOString(),
-    keyUrl: keyId ? `https://example.com/.well-known/jwks.json#${keyId}` : undefined,
+    protected: headerB64,
+    header: protectedHeader as unknown as Record<string, unknown>,
+    signature: sigB64,
   };
 }
 
@@ -206,31 +199,26 @@ export function signAgentCard(
  *
  * @param card AgentCard 对象
  * @param signature AgentCardSignature 对象
- * @param publicKeyPem 可选：PEM 格式公钥（若不提供则从 signature.publicKey 读取）
+ * @param publicKeyPem 可选：PEM 格式公钥
  * @returns 验证是否通过
- *
- * 验证流程：
- * 1. 对 AgentCard 进行 JCS 规范化（排除 signatures 字段）
- * 2. 解析 JWS 紧凑序列化
- * 3. 使用公钥验证签名
- * 4. 确认规范化后的负载与卡片内容一致
  */
 export function verifyAgentCardSignature(
   card: AgentCard,
   signature: AgentCardSignature,
   publicKeyPem?: string,
 ): boolean {
-  const pem = publicKeyPem ?? signature.publicKey;
-  if (!pem) {
+  if (!publicKeyPem) {
     console.warn("[AgentCard-Sig] 未提供公钥，无法验证");
     return false;
   }
 
   try {
-    const publicKey = crypto.createPublicKey(pem);
+    const publicKey = crypto.createPublicKey(publicKeyPem);
     const canonical = canonicalizeAgentCard(card);
+    const payloadB64 = base64urlEncode(Buffer.from(canonical, "utf-8"));
+    const jws = `${signature.protected}.${payloadB64}.${signature.signature}`;
 
-    const result = jwsVerify(signature.signature, publicKey);
+    const result = jwsVerify(jws, publicKey);
     if (!result) return false;
 
     // 验证负载是否与规范化后的卡片一致

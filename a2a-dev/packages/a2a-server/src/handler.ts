@@ -37,7 +37,7 @@ export class A2ARequestHandler {
           },
         );
       case "CancelTask":
-        return this.handleCancelTask(params as { taskId: string });
+        return this.handleCancelTask(params as { id: string });
       case "GetExtendedAgentCard":
         return this.handleGetExtendedAgentCard();
       case "CreateTaskPushNotificationConfig":
@@ -206,10 +206,11 @@ export class A2ARequestHandler {
   }
 
   // ========== 3.1.5 取消任务 ==========
-  private async handleCancelTask(params: { taskId: string }): Promise<Task> {
-    const task = await this.taskStore.getTask(params.taskId);
+  private async handleCancelTask(params: { id: string }): Promise<Task> {
+    const taskId = params.id;
+    const task = await this.taskStore.getTask(taskId);
     if (!task) {
-      throw this.createError(A2AErrorType.TASK_NOT_FOUND, `任务 ${params.taskId} 未找到`);
+      throw this.createError(A2AErrorType.TASK_NOT_FOUND, `任务 ${taskId} 未找到`);
     }
 
     const terminalStates: TaskState[] = [
@@ -222,7 +223,7 @@ export class A2ARequestHandler {
     if (terminalStates.includes(task.status.state)) {
       throw this.createError(
         A2AErrorType.TASK_NOT_CANCELABLE,
-        `任务 ${params.taskId} 已处于终止状态: ${task.status.state}`,
+        `任务 ${taskId} 已处于终止状态: ${task.status.state}`,
       );
     }
 
@@ -230,7 +231,7 @@ export class A2ARequestHandler {
     const eventQueue = new SimpleEventQueue();
     await this.executor.cancel(context, eventQueue);
 
-    const updated = await this.taskStore.updateTask(params.taskId, {
+    const updated = await this.taskStore.updateTask(taskId, {
       status: { state: TaskState.TASK_STATE_CANCELED },
     });
 

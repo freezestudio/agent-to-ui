@@ -68,10 +68,10 @@ describe("JWS 签名与验证 — RFC 7515", () => {
     const { publicKey, privateKey } = generateAgentCardKeyPair();
     const sig = signAgentCard(card, privateKey, "key-1");
 
-    expect(sig.type).toBe("JWS");
-    expect(sig.algorithm).toBe("ES256");
-    expect(sig.signature).toMatch(/^.+\.(.+)\.(.+)$/); // header.payload.signature
-    expect(sig.keyUrl).toContain("key-1");
+    expect(sig.protected).toBeDefined();
+    expect(typeof sig.protected).toBe("string");
+    expect(sig.signature).toBeDefined();
+    expect(typeof sig.signature).toBe("string");
 
     const signedCard: AgentCard = { ...card, signatures: [sig] };
     const valid = verifyAgentCardSignature(signedCard, sig, publicKey);
