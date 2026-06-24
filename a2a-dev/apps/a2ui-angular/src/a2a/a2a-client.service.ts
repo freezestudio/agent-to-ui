@@ -1,15 +1,15 @@
 /**
  * 轻量 A2A HTTP 客户端
  *
- * 直接发送 HTTP JSON-RPC 请求到 A2A 服务器。
- * 内联 A2UI 消息提取逻辑，避免 Node.js 环境依赖。
+ * 支持发送文本消息和 action 事件到 A2A 服务器。
+ * Action 事件以 DataPart（mimeType: application/a2ui+json）格式发送。
  *
  * @packageDocumentation
  */
 
 import { Injectable } from "@angular/core";
 import { A2UI_MIME_TYPE } from "./constants.js";
-import type { A2uiMessage } from "@a2a-dev/a2ui-core";
+import type { A2uiMessage, A2uiClientAction } from "@a2a-dev/a2ui-core";
 
 const A2A_BASE_URL = "/a2a";
 
@@ -46,32 +46,49 @@ export class A2AClientService {
    * 发送文本消息到 A2A 服务器并提取 A2UI 消息
    */
   async sendAndExtract(text: string): Promise<A2uiMessage[]> {
-    const body = JSON.stringify({
-      jsonrpc: "2.0",
-      id: uuid(),
-      method: "SendMessage",
-      params: {
-        message: {
-          role: "ROLE_USER",
-          parts: [{ text }],
-          messageId: uuid(),
-        },
+    const response = await this.jsonRpc("SendMessage", {
+      message: { role: "ROLE_USER", parts: [{ text }], messageId: uuid() },
+    });
+    const task = response?.task;
+    return task ? extractA2uiMessages(task) : [];
+  }
+
+  /**
+   * 发送 action 事件到 A2A 服务器
+   *
+   * Action 事件编码为 A2UI DataPart（mimeType: application/a2ui+json），
+   * 作为 A2A 消息的 Part 发送。服务器识别后触发对应处理逻辑。
+   *
+   * @param action 客户端 action 对象
+   * @returns 服务端返回的 A2UI 消息（如 actionResponse）
+   */
+  async sendAction(action: A2uiClientAction): Promise<A2uiMessage[]> {
+    const response = await this.jsonRpc("SendMessage", {
+      message: {
+        role: "ROLE_USER",
+        parts: [{
+          data: { version: "1.0", action: action.action },
+          mediaType: A2UI_MIME_TYPE,
+        }],
+        messageId: uuid(),
       },
     });
+    const task = response?.task;
+    return task ? extractA2uiMessages(task) : [];
+  }
 
-    const response = await fetch(A2A_BASE_URL, {
+  /**
+   * 执行 JSON-RPC 调用
+   */
+  private async jsonRpc(method: string, params: unknown): Promise<any> {
+    const body = JSON.stringify({ jsonrpc: "2.0", id: uuid(), method, params });
+    const res = await fetch(A2A_BASE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", "A2A-Version": "1.0" },
       body,
     });
-
-    if (!response.ok) {
-      throw new Error(`A2A 请求失败: ${response.status}`);
-    }
-
-    const json = await response.json();
-    const task = json?.result?.task;
-    if (!task) return [];
-    return extractA2uiMessages(task);
+    if (!res.ok) throw new Error(`A2A 请求失败: ${res.status}`);
+    const json = await res.json();
+    return json?.result;
   }
 }

@@ -39,17 +39,20 @@ export class ButtonComponent extends BaseComponent implements AfterViewInit {
 
   onClick(): void {
     if (this.action?.event) {
-      this.renderer.onAction.next({
-        version: "1.0",
-        action: {
-          name: this.action.event.name,
-          surfaceId: this.surfaceId,
-          sourceComponentId: "button",
-          timestamp: new Date().toISOString(),
-          context: this.action.event.context ?? {},
-          wantResponse: this.action.event.wantResponse,
-        },
-      });
+      const surface = this.renderer.getSurface(this.surfaceId);
+      if (surface) {
+        surface.dispatchAction({
+          version: "1.0",
+          action: {
+            name: this.action.event.name,
+            surfaceId: this.surfaceId,
+            sourceComponentId: "button",
+            timestamp: new Date().toISOString(),
+            context: this.action.event.context ?? {},
+            wantResponse: this.action.event.wantResponse,
+          },
+        });
+      }
     }
   }
 }

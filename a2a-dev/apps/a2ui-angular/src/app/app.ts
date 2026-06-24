@@ -33,6 +33,9 @@ export class AppComponent {
   lastScene = signal("");
 
   constructor() {
+    // 注入 A2A 客户端到渲染器（延迟注入避免循环依赖）
+    this.renderer.setA2AClient(this.a2a);
+
     // 监听 surface 创建/删除事件，更新列表
     this.renderer.model.onSurfaceCreated.subscribe((s) => {
       this.surfaces.update((list) => [...list, s.id]);
