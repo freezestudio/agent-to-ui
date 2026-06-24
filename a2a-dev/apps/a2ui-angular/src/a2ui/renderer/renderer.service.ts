@@ -1,15 +1,14 @@
 /**
  * A2UI 子组件渲染服务
  *
- * 为容器组件提供子组件渲染能力。
- * 通过 Angular 依赖注入解耦，避免循环依赖。
- *
- * @packageDocumentation
+ * 为容器组件提供子组件动态渲染能力。
+ * 使用 Injector 在构造时注入 surfaceId 和 props。
  */
 
-import { Injectable, ViewContainerRef, inject, ComponentRef, Injector } from "@angular/core";
+import { Injectable, ViewContainerRef, Injector, inject } from "@angular/core";
 import { CatalogService } from "../catalog/catalog.js";
 import { A2uiRendererService } from "./a2ui-renderer.service.js";
+import { SURFACE_ID, COMPONENT_PROPS } from "./component-host-injection-tokens.js";
 
 @Injectable({ providedIn: "root" })
 export class ChildRendererService {
@@ -17,41 +16,35 @@ export class ChildRendererService {
   private renderer = inject(A2uiRendererService);
 
   /**
-   * 在指定的 ViewContainer 中渲染子组件
-   *
-   * @param vcr 父组件的 ViewContainerRef
-   * @param surfaceId 表面 ID
-   * @param childIds 子组件 ID 列表
+   * 渲染多个子组件
    */
-  renderChildren(vcr: ViewContainerRef, surfaceId: string, childIds: string[]): void {
-    vcr.clear();
+  renderChildren(vcr: ViewContainerRef, surfaceId: string, childIds: string[], parentInjector?: Injector): void {
     for (const childId of childIds) {
-      this.renderChild(vcr, surfaceId, childId);
+      this.renderChild(vcr, surfaceId, childId, parentInjector);
     }
   }
 
   /**
-   * 渲染单个子组件
+   * 渲染单个子组件，通过 Injector 注入 surfaceId 和 props
    */
-  renderChild(vcr: ViewContainerRef, surfaceId: string, childId: string): ComponentRef<unknown> | null {
+  renderChild(vcr: ViewContainerRef, surfaceId: string, childId: string, parentInjector?: Injector): void {
     const surface = this.renderer.getSurface(surfaceId);
-    if (!surface) return null;
+    if (!surface) return;
 
     const model = surface.componentsModel.get(childId);
-    if (!model) return null;
+    if (!model) return;
 
     const componentType = this.catalog.get(model.type);
-    if (!componentType) return null;
+    if (!componentType) return;
 
-    const ref = vcr.createComponent(componentType, {
-      injector: vcr.injector,
+    const injector = Injector.create({
+      parent: parentInjector ?? vcr.injector,
+      providers: [
+        { provide: SURFACE_ID, useValue: surfaceId },
+        { provide: COMPONENT_PROPS, useValue: model.properties },
+      ],
     });
 
-    if (ref.instance) {
-      (ref.instance as any).surfaceIdValue?.set?.(surfaceId);
-      (ref.instance as any).propsSignal?.set?.(model.properties);
-    }
-
-    return ref;
+    vcr.createComponent(componentType, { injector });
   }
 }

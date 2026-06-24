@@ -1,19 +1,19 @@
 /**
- * A2UI Text 组件（Angular 实现）
- *
- * body（默认）：使用 markdown-it 渲染 Markdown → innerHTML
- * caption：纯文本，使用 <em> 标签
+ * A2UI Text 组件
+ * body（默认）：markdown-it 渲染 → innerHTML
+ * caption：纯文本 → <em>
  */
 
-import { Component, signal, inject, OnInit, ChangeDetectionStrategy, effect } from "@angular/core";
+import { Component, signal, inject, ChangeDetectionStrategy, effect } from "@angular/core";
 import { DefaultMarkdownRenderer } from "../../../markdown/markdown.service.js";
+import { BaseComponent } from "./base.component.js";
 
 @Component({
   selector: "a2ui-text",
   standalone: true,
   template: `
-    @if (variantValue() === 'caption') {
-      <em class="a2ui-text caption">{{ textValue() }}</em>
+    @if (variant === 'caption') {
+      <em class="a2ui-text caption">{{ text }}</em>
     } @else {
       <span class="a2ui-text body" [innerHTML]="renderedHtml()"></span>
     }
@@ -27,32 +27,24 @@ import { DefaultMarkdownRenderer } from "../../../markdown/markdown.service.js";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextComponent implements OnInit {
+export class TextComponent extends BaseComponent {
   private mdRenderer = inject(DefaultMarkdownRenderer);
 
-  /** 由 ComponentHostComponent 设置的原始属性 */
-  propsSignal = signal<Record<string, unknown>>({});
+  /** 解析后的文本内容（支持 DynamicString 数据绑定） */
+  text = this.binding.resolveString(this.props["text"], this.surfaceId);
+  /** 文本变体 */
+  variant: "body" | "caption" = (this.props["variant"] as any) ?? "body";
 
-  /** 组件内部状态 */
-  textValue = signal("");
-  variantValue = signal<"body" | "caption">("body");
+  /** 渲染后的 HTML（仅在 body 变体时使用） */
   renderedHtml = signal("");
-
-  /** 渲染请求 ID（用于竞态控制） */
   private renderRequestId = 0;
 
-  ngOnInit(): void {
-    // 从 propsSignal 中提取 Text 组件的特定属性
-    const props = this.propsSignal();
-    this.textValue.set(String(props["text"] ?? ""));
-    this.variantValue.set((props["variant"] as "body" | "caption") ?? "body");
-  }
-
   constructor() {
-    // 监听 text 变化 → 异步渲染 Markdown
+    super();
+    // 异步渲染 Markdown
     effect(() => {
-      if (this.variantValue() === "caption") return;
-      const rawText = this.textValue();
+      if (this.variant === "caption") return;
+      const rawText = this.text;
       const requestId = ++this.renderRequestId;
       this.mdRenderer.render(rawText).then((html: string) => {
         if (requestId === this.renderRequestId) {

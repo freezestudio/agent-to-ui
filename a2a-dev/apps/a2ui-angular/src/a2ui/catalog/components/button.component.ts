@@ -1,10 +1,12 @@
-import { Component, signal, inject, ViewChild, ViewContainerRef, OnInit, AfterViewInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, inject, ViewChild, ViewContainerRef, AfterViewInit, ChangeDetectionStrategy } from "@angular/core";
 import { ChildRendererService } from "../../renderer/renderer.service.js";
 import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
+import { BaseComponent } from "./base.component.js";
 
 @Component({
   selector: "a2ui-button",
   standalone: true,
+  imports: [],
   template: `
     <button class="a2ui-button" [class.primary]="variant === 'primary'" [class.borderless]="variant === 'borderless'" (click)="onClick()">
       <ng-container #childContainer></ng-container>
@@ -20,42 +22,32 @@ import { A2uiRendererService } from "../../renderer/a2ui-renderer.service.js";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ButtonComponent implements OnInit, AfterViewInit {
+export class ButtonComponent extends BaseComponent implements AfterViewInit {
   private childRenderer = inject(ChildRendererService);
   private renderer = inject(A2uiRendererService);
-
   @ViewChild("childContainer", { read: ViewContainerRef }) childContainer!: ViewContainerRef;
 
-  surfaceIdValue = signal("");
-  propsSignal = signal<Record<string, unknown>>({});
-  variant = "default";
-  private childId = "";
-
-  ngOnInit(): void {
-    const props = this.propsSignal();
-    this.variant = (props["variant"] as string) ?? "default";
-    this.childId = (props["child"] as string) ?? "";
-  }
+  variant: string = (this.props["variant"] as string) ?? "default";
+  private childId: string = (this.props["child"] as string) ?? "";
+  private action: any = this.props["action"];
 
   ngAfterViewInit(): void {
     if (this.childId && this.childContainer) {
-      this.childRenderer.renderChild(this.childContainer, this.surfaceIdValue(), this.childId);
+      this.childRenderer.renderChild(this.childContainer, this.surfaceId, this.childId);
     }
   }
 
   onClick(): void {
-    const props = this.propsSignal();
-    const action = props["action"] as any;
-    if (action?.event) {
+    if (this.action?.event) {
       this.renderer.onAction.next({
         version: "1.0",
         action: {
-          name: action.event.name,
-          surfaceId: this.surfaceIdValue(),
+          name: this.action.event.name,
+          surfaceId: this.surfaceId,
           sourceComponentId: "button",
           timestamp: new Date().toISOString(),
-          context: action.event.context ?? {},
-          wantResponse: action.event.wantResponse,
+          context: this.action.event.context ?? {},
+          wantResponse: this.action.event.wantResponse,
         },
       });
     }

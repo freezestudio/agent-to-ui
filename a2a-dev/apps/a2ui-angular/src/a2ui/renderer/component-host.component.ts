@@ -2,36 +2,31 @@
  * A2UI 组件宿主组件
  *
  * 根据组件类型动态解析并渲染对应的 Angular 组件。
- * 负责递归渲染容器组件的子组件。
- *
- * @packageDocumentation
+ * 通过 Injector 在子组件构造时注入 surfaceId 和 props，
+ * 确保 ngOnInit 中可以访问到完整数据。
  */
 
-import { Component, computed, inject, input, ViewContainerRef, OnInit, OnDestroy } from "@angular/core";
+import { Component, inject, input, ViewContainerRef, Injector, OnInit } from "@angular/core";
 import { A2uiRendererService } from "./a2ui-renderer.service.js";
 import { CatalogService } from "../catalog/catalog.js";
+import { SURFACE_ID, COMPONENT_PROPS } from "./component-host-injection-tokens.js";
 
 @Component({
   selector: "a2ui-component-host",
   standalone: true,
   template: `<!-- 子组件通过 ViewContainerRef 动态创建 -->`,
 })
-export class ComponentHostComponent implements OnInit, OnDestroy {
+export class ComponentHostComponent implements OnInit {
   private renderer = inject(A2uiRendererService);
   private catalog = inject(CatalogService);
   private viewContainer = inject(ViewContainerRef);
+  private parentInjector = inject(Injector);
 
   surfaceId = input.required<string>();
   componentId = input.required<string>();
 
-  private childHosts: ComponentHostComponent[] = [];
-
   ngOnInit(): void {
     this.renderComponent();
-  }
-
-  ngOnDestroy(): void {
-    this.viewContainer.clear();
   }
 
   private renderComponent(): void {
@@ -47,15 +42,17 @@ export class ComponentHostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 创建组件实例
-    const ref = this.viewContainer.createComponent(componentType, {
-      injector: this.viewContainer.injector,
+    // 通过 Injector 在构造时注入 surfaceId 和 props
+    const childInjector = Injector.create({
+      parent: this.parentInjector,
+      providers: [
+        { provide: SURFACE_ID, useValue: this.surfaceId() },
+        { provide: COMPONENT_PROPS, useValue: model.properties },
+      ],
     });
 
-    // 设置输入属性
-    if (ref.instance) {
-      (ref.instance as any).surfaceIdValue?.set?.(this.surfaceId());
-      (ref.instance as any).propsSignal?.set?.(model.properties);
-    }
+    this.viewContainer.createComponent(componentType, {
+      injector: childInjector,
+    });
   }
 }

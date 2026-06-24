@@ -1,29 +1,13 @@
-/**
- * A2UI Video 组件
- * 显示视频播放器，支持封面图。
- */
-
-import { Component, signal, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { BaseComponent } from "./base.component.js";
 
 @Component({
   selector: "a2ui-video",
   standalone: true,
-  template: `
-    <div class="a2ui-video-wrapper">
-      <video controls [src]="videoUrl" [poster]="posterUrl" class="a2ui-video"></video>
-    </div>
-  `,
-  styles: [`.a2ui-video-wrapper { width: 100%; } .a2ui-video { width: 100%; max-height: 400px; border-radius: 8px; }`],
+  template: `<div style="width:100%"><video controls [src]="videoUrl" [poster]="posterUrl" style="width:100%;max-height:400px;border-radius:8px"></video></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VideoComponent implements OnInit {
-  propsSignal = signal<Record<string, unknown>>({});
-  videoUrl = "";
-  posterUrl = "";
-
-  ngOnInit(): void {
-    const props = this.propsSignal();
-    this.videoUrl = String(props["url"] ?? "");
-    this.posterUrl = String(props["posterUrl"] ?? "");
-  }
+export class VideoComponent extends BaseComponent {
+  videoUrl = this.binding.resolveString(this.props["url"], this.surfaceId);
+  posterUrl = this.binding.resolveString(this.props["posterUrl"], this.surfaceId);
 }

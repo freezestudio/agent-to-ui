@@ -1,30 +1,13 @@
-/**
- * A2UI AudioPlayer 组件
- * 显示音频播放器，支持描述文字。
- */
-
-import { Component, signal, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { BaseComponent } from "./base.component.js";
 
 @Component({
   selector: "a2ui-audio-player",
   standalone: true,
-  template: `
-    <div class="a2ui-audio">
-      @if(description) { <p class="a2ui-audio-desc">{{ description }}</p> }
-      <audio controls [src]="audioUrl" class="a2ui-audio-player"></audio>
-    </div>
-  `,
-  styles: [`.a2ui-audio { padding: 8px 0; } .a2ui-audio-desc { margin: 0 0 8px; font-size: 0.9rem; color: #666; } .a2ui-audio-player { width: 100%; }`],
+  template: `<div style="padding:8px 0">@if(desc){<p style="margin:0 0 8px;font-size:0.9rem;color:#666">{{desc}}</p>}<audio controls [src]="audioUrl" style="width:100%"></audio></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AudioPlayerComponent implements OnInit {
-  propsSignal = signal<Record<string, unknown>>({});
-  audioUrl = "";
-  description = "";
-
-  ngOnInit(): void {
-    const props = this.propsSignal();
-    this.audioUrl = String(props["url"] ?? "");
-    this.description = String(props["description"] ?? "");
-  }
+export class AudioPlayerComponent extends BaseComponent {
+  audioUrl = this.binding.resolveString(this.props["url"], this.surfaceId);
+  desc = this.binding.resolveString(this.props["description"], this.surfaceId);
 }
