@@ -16,34 +16,67 @@ export { SPEC_VERSION } from "./schema/common-types.js";
 // 通用类型（types）
 // ============================================================================
 export type {
-  ComponentId, CallId,
-  DataBinding, FunctionCall,
-  DynamicValue, DynamicString, DynamicNumber, DynamicBoolean, DynamicStringList,
+  ComponentId,
+  CallId,
+  DataBinding,
+  FunctionCall,
+  DynamicValue,
+  DynamicString,
+  DynamicNumber,
+  DynamicBoolean,
+  DynamicStringList,
   AccessibilityAttributes,
   ComponentCommon,
   ChildList,
-  CheckRule, Checkable,
-  ActionEvent, ActionFunctionCall, Action,
+  CheckRule,
+  Checkable,
+  ActionEvent,
+  ActionFunctionCall,
+  Action,
 } from "./types/common.js";
 
 // ============================================================================
 // 消息类型（types）
 // ============================================================================
 export type {
-  CreateSurfaceMessage, UpdateComponentsMessage, UpdateDataModelMessage,
-  DeleteSurfaceMessage, ActionResponseMessage, CallFunctionMessage,
-  A2uiMessage, ComponentDefinition,
-  A2uiClientAction, A2uiClientFunctionResponse, A2uiClientError, A2uiClientMessage,
+  CreateSurfaceMessage,
+  UpdateComponentsMessage,
+  UpdateDataModelMessage,
+  DeleteSurfaceMessage,
+  ActionResponseMessage,
+  CallFunctionMessage,
+  A2uiMessage,
+  ComponentDefinition,
+  A2uiClientAction,
+  A2uiClientFunctionResponse,
+  A2uiClientError,
+  A2uiClientMessage,
 } from "./types/messages.js";
 
 // ============================================================================
 // 组件类型（types）
 // ============================================================================
 export type {
-  TextProps, ImageProps, IconProps, VideoProps, AudioPlayerProps,
-  RowProps, ColumnProps, ListProps, CardProps, TabsProps, DividerProps, ModalProps,
-  ButtonProps, TextFieldProps, CheckBoxProps, ChoicePickerProps, SliderProps, DateTimeInputProps,
-  AnyComponentProps, ComponentName,
+  TextProps,
+  ImageProps,
+  IconProps,
+  VideoProps,
+  AudioPlayerProps,
+  RowProps,
+  ColumnProps,
+  ListProps,
+  CardProps,
+  TabsProps,
+  DividerProps,
+  ModalProps,
+  ButtonProps,
+  TextFieldProps,
+  CheckBoxProps,
+  ChoicePickerProps,
+  SliderProps,
+  DateTimeInputProps,
+  AnyComponentProps,
+  ComponentName,
 } from "./types/components.js";
 export { COMPONENT_NAMES } from "./types/components.js";
 
@@ -57,40 +90,79 @@ export type { ComponentApi, Catalog, FunctionImpl } from "./types/catalog.js";
 // ============================================================================
 export {
   // 通用类型模式
-  ComponentIdSchema, DataBindingSchema, FunctionCallSchema,
-  DynamicStringSchema, DynamicNumberSchema, DynamicBooleanSchema, DynamicStringListSchema,
-  ComponentCommonSchema, ChildListSchema, CheckRuleSchema,
-  ActionEventSchema, ActionFunctionCallSchema, ActionSchema,
+  ComponentIdSchema,
+  DataBindingSchema,
+  FunctionCallSchema,
+  DynamicStringSchema,
+  DynamicNumberSchema,
+  DynamicBooleanSchema,
+  DynamicStringListSchema,
+  ComponentCommonSchema,
+  ChildListSchema,
+  CheckRuleSchema,
+  ActionEventSchema,
+  ActionFunctionCallSchema,
+  ActionSchema,
 } from "./schema/common-types.js";
 
 export {
   // 信封消息模式
   A2uiMessageSchema,
-  CreateSurfaceSchema, UpdateComponentsSchema, UpdateDataModelSchema,
-  DeleteSurfaceSchema, ActionResponseSchema, CallFunctionSchema,
+  CreateSurfaceSchema,
+  UpdateComponentsSchema,
+  UpdateDataModelSchema,
+  DeleteSurfaceSchema,
+  ActionResponseSchema,
+  CallFunctionSchema,
 } from "./schema/server-to-client.js";
 
 export {
   // 客户端消息模式
-  A2uiClientActionSchema, A2uiClientFunctionResponseSchema,
-  A2uiClientErrorSchema, A2uiClientMessageSchema,
+  A2uiClientActionSchema,
+  A2uiClientFunctionResponseSchema,
+  A2uiClientErrorSchema,
+  A2uiClientMessageSchema,
 } from "./schema/client-to-server.js";
 
 export {
   // 组件模式
   AnyComponentSchema,
-  TextSchema, ImageSchema, IconSchema, VideoSchema, AudioPlayerSchema,
-  RowSchema, ColumnSchema, ListSchema, CardSchema, TabsSchema, DividerSchema, ModalSchema,
-  ButtonSchema, TextFieldSchema, CheckBoxSchema, ChoicePickerSchema, SliderSchema, DateTimeInputSchema,
+  TextSchema,
+  ImageSchema,
+  IconSchema,
+  VideoSchema,
+  AudioPlayerSchema,
+  RowSchema,
+  ColumnSchema,
+  ListSchema,
+  CardSchema,
+  TabsSchema,
+  DividerSchema,
+  ModalSchema,
+  ButtonSchema,
+  TextFieldSchema,
+  CheckBoxSchema,
+  ChoicePickerSchema,
+  SliderSchema,
+  DateTimeInputSchema,
 } from "./schema/catalog/components.js";
 
 export {
   // 函数模式
   AnyFunctionSchema,
-  RequiredFnSchema, RegexFnSchema, LengthFnSchema, NumericFnSchema, EmailFnSchema,
-  FormatStringFnSchema, FormatNumberFnSchema, FormatCurrencyFnSchema, FormatDateFnSchema,
+  RequiredFnSchema,
+  RegexFnSchema,
+  LengthFnSchema,
+  NumericFnSchema,
+  EmailFnSchema,
+  FormatStringFnSchema,
+  FormatNumberFnSchema,
+  FormatCurrencyFnSchema,
+  FormatDateFnSchema,
   PluralizeFnSchema,
   OpenUrlFnSchema,
-  AndFnSchema, OrFnSchema, NotFnSchema,
+  AndFnSchema,
+  OrFnSchema,
+  NotFnSchema,
   IndexFnSchema,
 } from "./schema/catalog/functions.js";

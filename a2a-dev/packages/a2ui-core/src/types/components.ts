@@ -8,9 +8,14 @@
  */
 
 import type {
-  ComponentCommon, ChildList,
-  DynamicString, DynamicNumber, DynamicBoolean, DynamicStringList,
-  Action, Checkable,
+  ComponentCommon,
+  ChildList,
+  DynamicString,
+  DynamicNumber,
+  DynamicBoolean,
+  DynamicStringList,
+  Action,
+  Checkable,
 } from "./common.js";
 
 // ============================================================================
@@ -223,16 +228,46 @@ export interface DateTimeInputProps extends ComponentCommon, Checkable {
 
 /** 任意组件属性的联合类型 */
 export type AnyComponentProps =
-  | TextProps | ImageProps | IconProps | VideoProps | AudioPlayerProps
-  | RowProps | ColumnProps | ListProps | CardProps | TabsProps | DividerProps | ModalProps
-  | ButtonProps | TextFieldProps | CheckBoxProps | ChoicePickerProps | SliderProps | DateTimeInputProps;
+  | TextProps
+  | ImageProps
+  | IconProps
+  | VideoProps
+  | AudioPlayerProps
+  | RowProps
+  | ColumnProps
+  | ListProps
+  | CardProps
+  | TabsProps
+  | DividerProps
+  | ModalProps
+  | ButtonProps
+  | TextFieldProps
+  | CheckBoxProps
+  | ChoicePickerProps
+  | SliderProps
+  | DateTimeInputProps;
 
 /** 所有组件名称的常量数组 */
 export const COMPONENT_NAMES = [
-  "Text", "Image", "Icon", "Video", "AudioPlayer",
-  "Row", "Column", "List", "Card", "Tabs", "Divider", "Modal",
-  "Button", "TextField", "CheckBox", "ChoicePicker", "Slider", "DateTimeInput",
+  "Text",
+  "Image",
+  "Icon",
+  "Video",
+  "AudioPlayer",
+  "Row",
+  "Column",
+  "List",
+  "Card",
+  "Tabs",
+  "Divider",
+  "Modal",
+  "Button",
+  "TextField",
+  "CheckBox",
+  "ChoicePicker",
+  "Slider",
+  "DateTimeInput",
 ] as const;
 
 /** 组件名称的联合类型 */
-export type ComponentName = typeof COMPONENT_NAMES[number];
+export type ComponentName = (typeof COMPONENT_NAMES)[number];

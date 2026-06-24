@@ -16,10 +16,8 @@ import type { DataModel } from "../state/data-model.js";
 const logger = pino({ name: "a2ui:function-invoker" });
 
 /** 函数实现类型 */
-export type FunctionImpl = (
-  args: Record<string, unknown>,
-  dataModel?: DataModel,
-) => unknown | Promise<unknown>;
+/** 函数实现类型（同步或异步均可） */
+export type FunctionImpl = (args: Record<string, unknown>, dataModel?: DataModel) => unknown;
 
 /**
  * FunctionInvoker — 客户端函数调用引擎

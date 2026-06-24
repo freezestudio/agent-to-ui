@@ -1,7 +1,7 @@
 /**
  * 事件系统测试
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { EventSource } from "../common/events.js";
 
 describe("EventSource", () => {

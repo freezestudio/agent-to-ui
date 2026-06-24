@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 /**
  * Markdown 渲染器抽象

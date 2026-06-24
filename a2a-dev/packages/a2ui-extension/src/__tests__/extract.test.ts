@@ -1,15 +1,23 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { extractA2uiFromTask } from "../extract.js";
 
 describe("extractA2uiFromTask", () => {
   it("应从 artifact 的 DataPart 中提取 A2UI 消息", () => {
     const task = {
-      artifacts: [{
-        parts: [{
-          mediaType: "application/a2ui+json",
-          data: { a2uiMessages: [{ version: "1.0", createSurface: { surfaceId: "main", catalogId: "test" } }] },
-        }],
-      }],
+      artifacts: [
+        {
+          parts: [
+            {
+              mediaType: "application/a2ui+json",
+              data: {
+                a2uiMessages: [
+                  { version: "1.0", createSurface: { surfaceId: "main", catalogId: "test" } },
+                ],
+              },
+            },
+          ],
+        },
+      ],
     };
     const msgs = extractA2uiFromTask(task);
     expect(msgs).toHaveLength(1);

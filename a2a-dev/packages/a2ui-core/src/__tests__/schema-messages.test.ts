@@ -5,35 +5,18 @@
  * Zod v4 验证行为。
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 
 /**
  * 红灯：从尚未实现的模块导入
  */
-import {
-  A2uiMessageSchema,
-  CreateSurfaceSchema,
-  UpdateComponentsSchema,
-  UpdateDataModelSchema,
-  DeleteSurfaceSchema,
-  ActionResponseSchema,
-  CallFunctionSchema,
-  SPEC_VERSION,
-} from "../schema/server-to-client.js";
-
+import { A2uiMessageSchema } from "../schema/server-to-client.js";
 import { A2uiClientMessageSchema } from "../schema/client-to-server.js";
 
 import type {
   A2uiMessage,
-  CreateSurfaceMessage,
-  UpdateComponentsMessage,
-  UpdateDataModelMessage,
-  DeleteSurfaceMessage,
-  ActionResponseMessage,
-  CallFunctionMessage,
   A2uiClientAction,
   A2uiClientFunctionResponse,
-  A2uiClientError,
 } from "../types/messages.js";
 
 // ============================================================================
@@ -59,9 +42,7 @@ describe("CreateSurfaceMessage", () => {
         surfaceId: "main",
         catalogId: "test-catalog",
         surfaceProperties: { iconUrl: "https://example.com/icon.png" },
-        components: [
-          { id: "root", component: "Text", text: "Hello" },
-        ],
+        components: [{ id: "root", component: "Text", text: "Hello" }],
         dataModel: { user: { name: "Alice" } },
       },
     };
@@ -98,9 +79,7 @@ describe("UpdateComponentsMessage", () => {
       version: "1.0",
       updateComponents: {
         surfaceId: "main",
-        components: [
-          { id: "t1", component: "Text", text: "Hello" },
-        ],
+        components: [{ id: "t1", component: "Text", text: "Hello" }],
       },
     };
     const result = A2uiMessageSchema.safeParse(msg);

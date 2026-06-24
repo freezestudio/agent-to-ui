@@ -24,6 +24,6 @@ peerDependencyRules:
     vitest: "*"
 allowBuilds:
   esbuild: true
-  '@parcel/watcher': true
+  "@parcel/watcher": true
   lmdb: true
   msgpackr-extract: true

@@ -66,10 +66,12 @@ export class A2AClientService {
     const response = await this.jsonRpc("SendMessage", {
       message: {
         role: "ROLE_USER",
-        parts: [{
-          data: { version: "1.0", action: action.action },
-          mediaType: A2UI_MIME_TYPE,
-        }],
+        parts: [
+          {
+            data: { version: "1.0", action: action.action },
+            mediaType: A2UI_MIME_TYPE,
+          },
+        ],
         messageId: uuid(),
       },
     });

@@ -1,7 +1,7 @@
 /**
  * 函数调用器测试
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { FunctionInvoker } from "../processing/function-invoker.js";
 
 describe("FunctionInvoker", () => {
@@ -24,14 +24,20 @@ describe("FunctionInvoker", () => {
   it("regex 函数：正则匹配", async () => {
     const invoker = new FunctionInvoker();
     invoker.registerBuiltins();
-    expect(await invoker.call({ call: "regex", args: { value: "abc123", pattern: "^[a-z]+\\d+$" } })).toBe(true);
-    expect(await invoker.call({ call: "regex", args: { value: "ABC", pattern: "^[a-z]+$" } })).toBe(false);
+    expect(
+      await invoker.call({ call: "regex", args: { value: "abc123", pattern: "^[a-z]+\\d+$" } }),
+    ).toBe(true);
+    expect(await invoker.call({ call: "regex", args: { value: "ABC", pattern: "^[a-z]+$" } })).toBe(
+      false,
+    );
   });
 
   it("length 函数：长度范围校验", async () => {
     const invoker = new FunctionInvoker();
     invoker.registerBuiltins();
-    expect(await invoker.call({ call: "length", args: { value: "abc", min: 2, max: 5 } })).toBe(true);
+    expect(await invoker.call({ call: "length", args: { value: "abc", min: 2, max: 5 } })).toBe(
+      true,
+    );
     expect(await invoker.call({ call: "length", args: { value: "a", min: 2 } })).toBe(false);
     expect(await invoker.call({ call: "length", args: { value: "abcdef", max: 5 } })).toBe(false);
   });

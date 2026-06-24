@@ -12,19 +12,32 @@ import { BaseComponent } from "./base.component.js";
   selector: "a2ui-text",
   standalone: true,
   template: `
-    @if (variant === 'caption') {
+    @if (variant === "caption") {
       <em class="a2ui-text caption">{{ text }}</em>
     } @else {
       <span class="a2ui-text body" [innerHTML]="renderedHtml()"></span>
     }
   `,
-  styles: [`
-    :host ::ng-deep .a2ui-text.body p { margin: 0 0 0.5em 0; }
-    :host ::ng-deep .a2ui-text.body p:last-child { margin-bottom: 0; }
-    :host ::ng-deep .a2ui-text.body { line-height: 1.6; }
-    :host ::ng-deep .a2ui-text.body strong { font-weight: 600; }
-    .a2ui-text.caption { font-size: 0.85em; color: #888; }
-  `],
+  styles: [
+    `
+      :host ::ng-deep .a2ui-text.body p {
+        margin: 0 0 0.5em 0;
+      }
+      :host ::ng-deep .a2ui-text.body p:last-child {
+        margin-bottom: 0;
+      }
+      :host ::ng-deep .a2ui-text.body {
+        line-height: 1.6;
+      }
+      :host ::ng-deep .a2ui-text.body strong {
+        font-weight: 600;
+      }
+      .a2ui-text.caption {
+        font-size: 0.85em;
+        color: #888;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextComponent extends BaseComponent {

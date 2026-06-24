@@ -2,7 +2,9 @@
   "name": "@a2a-dev/a2ui-core",
   "version": "0.1.0",
   "private": true,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "types": "./dist/index.d.mts",
   "exports": {

@@ -1,4 +1,11 @@
-import { Component, inject, ViewChild, ViewContainerRef, AfterViewInit, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  inject,
+  ViewChild,
+  ViewContainerRef,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ChildRendererService } from "../../renderer/renderer.service.js";
 import { BaseComponent } from "./base.component.js";
 
@@ -7,18 +14,46 @@ import { BaseComponent } from "./base.component.js";
   standalone: true,
   imports: [],
   template: `
-    <button class="a2ui-button" [class.primary]="variant === 'primary'" [class.borderless]="variant === 'borderless'" (click)="onClick()">
+    <button
+      class="a2ui-button"
+      [class.primary]="variant === 'primary'"
+      [class.borderless]="variant === 'borderless'"
+      (click)="onClick()"
+    >
       <ng-container #childContainer></ng-container>
     </button>
   `,
-  styles: [`
-    .a2ui-button { padding: 8px 20px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; font-size: 0.95rem; }
-    .a2ui-button:hover { background: #f5f5f5; }
-    .a2ui-button.primary { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
-    .a2ui-button.primary:hover { background: #2d2d5e; }
-    .a2ui-button.borderless { border: none; background: transparent; }
-    .a2ui-button.borderless:hover { background: transparent; text-decoration: underline; }
-  `],
+  styles: [
+    `
+      .a2ui-button {
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: 1px solid #d0d0d0;
+        background: #fff;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .a2ui-button:hover {
+        background: #f5f5f5;
+      }
+      .a2ui-button.primary {
+        background: #1a1a2e;
+        color: #fff;
+        border-color: #1a1a2e;
+      }
+      .a2ui-button.primary:hover {
+        background: #2d2d5e;
+      }
+      .a2ui-button.borderless {
+        border: none;
+        background: transparent;
+      }
+      .a2ui-button.borderless:hover {
+        background: transparent;
+        text-decoration: underline;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent extends BaseComponent implements AfterViewInit {

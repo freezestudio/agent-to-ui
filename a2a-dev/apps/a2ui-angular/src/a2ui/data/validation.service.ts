@@ -10,7 +10,6 @@
 
 import { Injectable, inject } from "@angular/core";
 import { FunctionInvoker } from "@a2a-dev/a2ui-renderer";
-import { FunctionCallSchema } from "@a2a-dev/a2ui-core";
 import { DataBindingService } from "./data-binding.service.js";
 
 export interface ValidationResult {
@@ -45,7 +44,11 @@ export class ValidationService {
         const conditionValue = this.binding.resolveValue(rule.condition, surfaceId);
 
         // condition 可能是 FunctionCall { call, args }
-        if (conditionValue && typeof conditionValue === "object" && "call" in (conditionValue as any)) {
+        if (
+          conditionValue &&
+          typeof conditionValue === "object" &&
+          "call" in (conditionValue as any)
+        ) {
           const fc = conditionValue as { call: string; args?: Record<string, unknown> };
           const fnInvoker = new FunctionInvoker();
           fnInvoker.registerBuiltins();

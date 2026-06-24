@@ -33,9 +33,11 @@ export const ComponentIdSchema = z.string().min(1, "组件 ID 不能为空");
  * 验证 { path: string } 格式的数据绑定。
  * 使用 .strict() 禁止额外字段。
  */
-export const DataBindingSchema = z.object({
-  path: z.string().min(1, "JSON Pointer 路径不能为空"),
-}).strict();
+export const DataBindingSchema = z
+  .object({
+    path: z.string().min(1, "JSON Pointer 路径不能为空"),
+  })
+  .strict();
 
 // ============================================================================
 // 函数调用模式
@@ -61,33 +63,21 @@ export const FunctionCallSchema = z.object({
  *
  * 字符串值的联合类型：字面量 | DataBinding | FunctionCall
  */
-export const DynamicStringSchema = z.union([
-  z.string(),
-  DataBindingSchema,
-  FunctionCallSchema,
-]);
+export const DynamicStringSchema = z.union([z.string(), DataBindingSchema, FunctionCallSchema]);
 
 /**
  * DynamicNumber Zod 模式
  *
  * 数值值的联合类型：number | DataBinding | FunctionCall
  */
-export const DynamicNumberSchema = z.union([
-  z.number(),
-  DataBindingSchema,
-  FunctionCallSchema,
-]);
+export const DynamicNumberSchema = z.union([z.number(), DataBindingSchema, FunctionCallSchema]);
 
 /**
  * DynamicBoolean Zod 模式
  *
  * 布尔值的联合类型：boolean | DataBinding | FunctionCall
  */
-export const DynamicBooleanSchema = z.union([
-  z.boolean(),
-  DataBindingSchema,
-  FunctionCallSchema,
-]);
+export const DynamicBooleanSchema = z.union([z.boolean(), DataBindingSchema, FunctionCallSchema]);
 
 /**
  * DynamicStringList Zod 模式
@@ -113,10 +103,13 @@ export const DynamicStringListSchema = z.union([
  */
 export const ComponentCommonSchema = z.object({
   id: z.string().min(1, "组件 ID 不能为空"),
-  accessibility: z.object({
-    label: DynamicStringSchema.optional(),
-    description: DynamicStringSchema.optional(),
-  }).strict().optional(),
+  accessibility: z
+    .object({
+      label: DynamicStringSchema.optional(),
+      description: DynamicStringSchema.optional(),
+    })
+    .strict()
+    .optional(),
 });
 
 // ============================================================================
@@ -132,10 +125,12 @@ export const ComponentCommonSchema = z.object({
  */
 export const ChildListSchema: z.ZodType<unknown> = z.union([
   z.array(z.string()),
-  z.object({
-    componentId: z.string().min(1, "模板组件 ID 不能为空"),
-    path: z.string().min(1, "数据路径不能为空"),
-  }).strict(),
+  z
+    .object({
+      componentId: z.string().min(1, "模板组件 ID 不能为空"),
+      path: z.string().min(1, "数据路径不能为空"),
+    })
+    .strict(),
 ]);
 
 // ============================================================================
@@ -159,18 +154,24 @@ export const CheckRuleSchema = z.object({
 /**
  * Action 模式：事件触发或函数调用
  */
-export const ActionEventSchema = z.object({
-  event: z.object({
-    name: z.string().min(1, "事件名称不能为空"),
-    context: z.record(z.string(), z.unknown()).optional(),
-    wantResponse: z.boolean().optional(),
-    responsePath: z.string().optional(),
-  }).strict(),
-}).strict();
+export const ActionEventSchema = z
+  .object({
+    event: z
+      .object({
+        name: z.string().min(1, "事件名称不能为空"),
+        context: z.record(z.string(), z.unknown()).optional(),
+        wantResponse: z.boolean().optional(),
+        responsePath: z.string().optional(),
+      })
+      .strict(),
+  })
+  .strict();
 
-export const ActionFunctionCallSchema = z.object({
-  functionCall: FunctionCallSchema,
-}).strict();
+export const ActionFunctionCallSchema = z
+  .object({
+    functionCall: FunctionCallSchema,
+  })
+  .strict();
 
 export const ActionSchema: z.ZodType<unknown> = z.union([
   ActionEventSchema,

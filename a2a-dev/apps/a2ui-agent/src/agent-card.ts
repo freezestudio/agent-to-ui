@@ -17,11 +17,13 @@ export const agentCard: AgentCard = {
   name: "A2UI 演示智能体",
   description: "演示 A2UI v1.0 协议通过 A2A 扩展传输，支持多种 UI 场景",
   version: "1.0.0",
-  supportedInterfaces: [{
-    url: `http://${HOST}:${PORT}/a2a`,
-    protocolBinding: "JSONRPC",
-    protocolVersion: "1.0",
-  }],
+  supportedInterfaces: [
+    {
+      url: `http://${HOST}:${PORT}/a2a`,
+      protocolBinding: "JSONRPC",
+      protocolVersion: "1.0",
+    },
+  ],
   capabilities: {
     streaming: true,
     extensions: [createA2UIExtension()],
@@ -30,37 +32,44 @@ export const agentCard: AgentCard = {
   defaultOutputModes: ["application/a2ui+json"],
   skills: [
     {
-      id: "hello", name: "欢迎页",
+      id: "hello",
+      name: "欢迎页",
       description: "显示 A2UI 欢迎界面（Text 组件）",
       examples: ["hello", "你好", "欢迎"],
     },
     {
-      id: "login", name: "登录表单",
+      id: "login",
+      name: "登录表单",
       description: "显示登录表单（TextField + Button）",
       examples: ["login", "登录", "显示登录"],
     },
     {
-      id: "booking", name: "餐厅预订",
+      id: "booking",
+      name: "餐厅预订",
       description: "餐厅预订表单（DateTimeInput + ChoicePicker + Button）",
       examples: ["booking", "预订", "订餐"],
     },
     {
-      id: "dashboard", name: "数据面板",
+      id: "dashboard",
+      name: "数据面板",
       description: "显示数据卡片面板（Card + Row/Column + Text）",
       examples: ["dashboard", "面板", "数据"],
     },
     {
-      id: "media", name: "多媒体展示",
+      id: "media",
+      name: "多媒体展示",
       description: "多媒体展示（Image + Text）",
       examples: ["media", "图片", "多媒体"],
     },
     {
-      id: "form", name: "综合表单",
+      id: "form",
+      name: "综合表单",
       description: "带校验的综合表单（TextField + CheckBox + ChoicePicker + Slider）",
       examples: ["form", "表单", "注册"],
     },
     {
-      id: "gallery", name: "多媒体画廊",
+      id: "gallery",
+      name: "多媒体画廊",
       description: "图片和图标展示（Image + Icon + Divider）",
       examples: ["gallery", "画廊", "图标"],
     },

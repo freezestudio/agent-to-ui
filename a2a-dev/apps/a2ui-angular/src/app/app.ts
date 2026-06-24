@@ -66,7 +66,6 @@ export class AppComponent {
 
       // 处理 A2UI 消息（创建 surface、更新组件等）
       this.renderer.processMessages(messages);
-
     } catch (error) {
       console.error("发送消息失败:", error);
     } finally {

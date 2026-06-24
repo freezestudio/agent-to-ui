@@ -1,7 +1,7 @@
 /**
  * 数据模型测试
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { DataModel } from "../state/data-model.js";
 
 describe("DataModel", () => {
@@ -35,8 +35,8 @@ describe("DataModel", () => {
   it("getSnapshot 应返回深拷贝", () => {
     const dm = new DataModel();
     dm.set("/", { items: [1, 2, 3] });
-    const snap1 = dm.getSnapshot();
-    const snap2 = dm.getSnapshot();
+    const snap1 = dm.getSnapshot() as Record<string, number[]>;
+    const snap2 = dm.getSnapshot() as Record<string, number[]>;
     expect(snap1).toEqual(snap2);
     snap1.items[0] = 999;
     expect(snap2.items[0]).toBe(1); // 深拷贝保证隔离

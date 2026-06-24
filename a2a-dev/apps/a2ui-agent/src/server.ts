@@ -52,7 +52,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         res.writeHead(200, {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",
-          "Connection": "keep-alive",
+          Connection: "keep-alive",
         });
         const result = await handler.handleMethod(method, params);
         if (result && typeof result === "object" && "stream" in result) {
@@ -78,16 +78,17 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     res.writeHead(404);
     res.end(JSON.stringify({ error: "未找到" }));
     logger.warn({ method: req.method, url: req.url }, "404 未找到");
-
   } catch (error: any) {
     const httpStatus = error.httpStatus ?? 500;
     logger.error({ error: error.message, code: error.code }, "请求处理失败");
     res.writeHead(httpStatus, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({
-      jsonrpc: "2.0",
-      id: null,
-      error: { code: error.code ?? -32603, message: error.message },
-    }));
+    res.end(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: error.code ?? -32603, message: error.message },
+      }),
+    );
   }
 });
 

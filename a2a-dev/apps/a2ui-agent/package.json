@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": { "start": "tsx src/server.ts" },
+  "scripts": {
+    "start": "tsx src/server.ts"
+  },
   "dependencies": {
+    "@a2a-dev/a2ui-extension": "workspace:*",
     "@a2a-dev/core": "workspace:*",
     "@a2a-dev/server": "workspace:*",
-    "@a2a-dev/a2ui-extension": "workspace:*",
     "pino": "^9.6.0"
   },
-  "devDependencies": { "tsx": "^4.19.0" }
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
 }

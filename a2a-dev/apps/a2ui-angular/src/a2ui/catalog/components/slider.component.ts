@@ -4,7 +4,20 @@ import { BaseComponent } from "./base.component.js";
 @Component({
   selector: "a2ui-slider",
   standalone: true,
-  template: `<div style="display:flex;flex-direction:column;gap:4px">@if(label){<label style="font-size:.85rem;color:#555">{{label}}: {{currentValue()}}</label>}<input type="range" [min]="min" [max]="max" [step]="step" [value]="currentValue()" (input)="onInput($event)" style="width:100%;cursor:pointer"/></div>`,
+  template: `<div style="display:flex;flex-direction:column;gap:4px">
+    @if (label) {
+      <label style="font-size:.85rem;color:#555">{{ label }}: {{ currentValue() }}</label>
+    }
+    <input
+      type="range"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [value]="currentValue()"
+      (input)="onInput($event)"
+      style="width:100%;cursor:pointer"
+    />
+  </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SliderComponent extends BaseComponent {

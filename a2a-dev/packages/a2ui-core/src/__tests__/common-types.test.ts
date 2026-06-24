@@ -12,27 +12,14 @@
  * Zod v4 运行时验证行为。
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { z } from "zod";
 
-/**
- * 红灯阶段：引用尚未实现的导出
- * 这些导入将失败，直到我们创建对应的源文件
- */
 import {
   DynamicStringSchema,
   DataBindingSchema,
-  FunctionCallSchema,
   ComponentCommonSchema,
-  SPEC_VERSION,
 } from "../schema/common-types.js";
-import type {
-  DataBinding,
-  FunctionCall,
-  DynamicString,
-  ComponentCommon,
-  Action,
-} from "../types/common.js";
 
 describe("DataBindingSchema", () => {
   /**
@@ -106,10 +93,12 @@ describe("ComponentCommonSchema", () => {
   it("应该只需要 id 字段", () => {
     const schema = z.object({
       id: z.string().min(1),
-      accessibility: z.object({
-        label: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
-        description: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
-      }).optional(),
+      accessibility: z
+        .object({
+          label: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
+          description: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
+        })
+        .optional(),
     });
     const result = schema.safeParse({ id: "btn-1" });
     expect(result.success).toBe(true);
@@ -118,10 +107,12 @@ describe("ComponentCommonSchema", () => {
   it("应该支持可选的 accessibility 属性", () => {
     const schema = z.object({
       id: z.string().min(1),
-      accessibility: z.object({
-        label: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
-        description: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
-      }).optional(),
+      accessibility: z
+        .object({
+          label: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
+          description: z.union([z.string(), z.object({ path: z.string() }).strict()]).optional(),
+        })
+        .optional(),
     });
     const result = schema.safeParse({
       id: "btn-1",
@@ -139,35 +130,44 @@ describe("ActionSchema", () => {
    */
 
   it("应该验证事件 action", () => {
-    const schema = z.object({
-      event: z.object({
-        name: z.string().min(1),
-        context: z.record(z.string(), z.unknown()).optional(),
-        wantResponse: z.boolean().optional(),
-        responsePath: z.string().optional(),
-      }).strict(),
-    }).strict();
+    const schema = z
+      .object({
+        event: z
+          .object({
+            name: z.string().min(1),
+            context: z.record(z.string(), z.unknown()).optional(),
+            wantResponse: z.boolean().optional(),
+            responsePath: z.string().optional(),
+          })
+          .strict(),
+      })
+      .strict();
     const result = schema.safeParse({ event: { name: "submit" } });
     expect(result.success).toBe(true);
   });
 
   it("应该验证函数调用 action", () => {
-    const schema = z.object({
-      functionCall: z.object({
-        call: z.string().min(1),
-        args: z.record(z.string(), z.unknown()).optional(),
-      }),
-    }).strict();
-    const result = schema.safeParse({ functionCall: { call: "openUrl", args: { url: "https://example.com" } } });
+    const schema = z
+      .object({
+        functionCall: z.object({
+          call: z.string().min(1),
+          args: z.record(z.string(), z.unknown()).optional(),
+        }),
+      })
+      .strict();
+    const result = schema.safeParse({
+      functionCall: { call: "openUrl", args: { url: "https://example.com" } },
+    });
     expect(result.success).toBe(true);
   });
 
   it("应该拒绝空的 action 名称", () => {
-    const schema = z.object({
-      event: z.object({ name: z.string().min(1) }).strict(),
-    }).strict();
+    const schema = z
+      .object({
+        event: z.object({ name: z.string().min(1) }).strict(),
+      })
+      .strict();
     const result = schema.safeParse({ event: { name: "" } });
     expect(result.success).toBe(false);
   });
 });
-

@@ -38,4 +38,4 @@ export interface Catalog {
  * 接受参数对象，返回计算结果。
  * 可以是同步或异步。
  */
-export type FunctionImpl = (args: Record<string, unknown>) => unknown | Promise<unknown>;
+export type FunctionImpl = (args: Record<string, unknown>) => unknown;

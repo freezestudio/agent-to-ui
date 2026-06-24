@@ -6,31 +6,69 @@
   <header class="app-header">
     <h1 class="app-title">A2UI v1.0 · Angular 22 演示</h1>
     <nav class="scene-nav">
-      <button class="scene-btn" (click)="switchScene('hello')" [class.active]="lastScene() === 'hello'">🏠 首页</button>
-      <button class="scene-btn" (click)="switchScene('login')" [class.active]="lastScene() === 'login'">🔐 登录</button>
-      <button class="scene-btn" (click)="switchScene('booking')" [class.active]="lastScene() === 'booking'">📅 预订</button>
-      <button class="scene-btn" (click)="switchScene('dashboard')" [class.active]="lastScene() === 'dashboard'">📊 面板</button>
-      <button class="scene-btn" (click)="switchScene('media')" [class.active]="lastScene() === 'media'">🖼 多媒体</button>
-      <button class="scene-btn" (click)="switchScene('form')" [class.active]="lastScene() === 'form'">📝 表单</button>
-      <button class="scene-btn" (click)="switchScene('gallery')" [class.active]="lastScene() === 'gallery'">🎨 画廊</button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('hello')"
+        [class.active]="lastScene() === 'hello'"
+      >
+        🏠 首页
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('login')"
+        [class.active]="lastScene() === 'login'"
+      >
+        🔐 登录
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('booking')"
+        [class.active]="lastScene() === 'booking'"
+      >
+        📅 预订
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('dashboard')"
+        [class.active]="lastScene() === 'dashboard'"
+      >
+        📊 面板
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('media')"
+        [class.active]="lastScene() === 'media'"
+      >
+        🖼 多媒体
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('form')"
+        [class.active]="lastScene() === 'form'"
+      >
+        📝 表单
+      </button>
+      <button
+        class="scene-btn"
+        (click)="switchScene('gallery')"
+        [class.active]="lastScene() === 'gallery'"
+      >
+        🎨 画廊
+      </button>
     </nav>
   </header>
 
   <!-- 主内容区：渲染 A2UI Surface -->
   <main class="app-main">
     @if (loading()) {
-      <div class="loading-indicator">加载中...</div>
-    }
-
-    @if (surfaces().length === 0 && !loading()) {
-      <div class="welcome-hint">
-        <p>👋 点击上方按钮选择一个演示场景</p>
-        <p class="hint-sub">A2UI 代理将生成交互式 UI</p>
-      </div>
-    }
-
-    @for (id of surfaces(); track id) {
-      <a2ui-surface [surfaceId]="id" />
+    <div class="loading-indicator">加载中...</div>
+    } @if (surfaces().length === 0 && !loading()) {
+    <div class="welcome-hint">
+      <p>👋 点击上方按钮选择一个演示场景</p>
+      <p class="hint-sub">A2UI 代理将生成交互式 UI</p>
+    </div>
+    } @for (id of surfaces(); track id) {
+    <a2ui-surface [surfaceId]="id" />
     }
   </main>
 

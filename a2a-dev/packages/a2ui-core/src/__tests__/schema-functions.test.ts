@@ -4,11 +4,17 @@
  * 测试 14 个内置函数的运行时验证行为。
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
-  RequiredFnSchema, RegexFnSchema, LengthFnSchema, EmailFnSchema,
-  AndFnSchema, OrFnSchema, NotFnSchema,
-  OpenUrlFnSchema, FormatDateFnSchema,
+  RequiredFnSchema,
+  RegexFnSchema,
+  LengthFnSchema,
+  EmailFnSchema,
+  AndFnSchema,
+  OrFnSchema,
+  NotFnSchema,
+  OpenUrlFnSchema,
+  FormatDateFnSchema,
 } from "../schema/catalog/functions.js";
 
 describe("RequiredFn", () => {
@@ -21,7 +27,8 @@ describe("RequiredFn", () => {
 describe("RegexFn", () => {
   it("应该验证合法的 regex 调用", () => {
     const result = RegexFnSchema.safeParse({
-      call: "regex", args: { value: "hello", pattern: "^h" },
+      call: "regex",
+      args: { value: "hello", pattern: "^h" },
     });
     expect(result.success).toBe(true);
   });
@@ -30,7 +37,8 @@ describe("RegexFn", () => {
 describe("EmailFn", () => {
   it("应该验证合法的 email 调用", () => {
     const result = EmailFnSchema.safeParse({
-      call: "email", args: { value: "test@example.com" },
+      call: "email",
+      args: { value: "test@example.com" },
     });
     expect(result.success).toBe(true);
   });
@@ -67,7 +75,8 @@ describe("OpenUrlFn", () => {
 describe("FormatDateFn", () => {
   it("应该验证合法的 formatDate 调用", () => {
     const result = FormatDateFnSchema.safeParse({
-      call: "formatDate", args: { value: "2026-01-01", format: "yyyy-MM-dd" },
+      call: "formatDate",
+      args: { value: "2026-01-01", format: "yyyy-MM-dd" },
     });
     expect(result.success).toBe(true);
   });

@@ -168,12 +168,14 @@ export interface ComponentCommon {
  * { "children": { "componentId": "item", "path": "/listItems" } }
  * ```
  */
-export type ChildList = ComponentId[] | {
-  /** 模板组件的 ID（渲染器为列表中的每一项复制此组件） */
-  componentId: ComponentId;
-  /** 数据模型中数组数据的 JSON Pointer 路径 */
-  path: string;
-};
+export type ChildList =
+  | ComponentId[]
+  | {
+      /** 模板组件的 ID（渲染器为列表中的每一项复制此组件） */
+      componentId: ComponentId;
+      /** 数据模型中数组数据的 JSON Pointer 路径 */
+      path: string;
+    };
 
 // ============================================================================
 // 校验规则系统（Validation / Checks）

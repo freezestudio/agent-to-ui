@@ -23,18 +23,22 @@ import { SPEC_VERSION } from "./common-types.js";
  * 当用户与 UI 组件交互时，客户端发送此消息。
  * 必须包含 version、action.name、surfaceId、sourceComponentId、timestamp 和 context。
  */
-export const A2uiClientActionSchema = z.object({
-  version: z.literal(SPEC_VERSION),
-  action: z.object({
-    name: z.string().min(1, "action 名称不能为空"),
-    surfaceId: z.string().min(1, "surfaceId 不能为空"),
-    sourceComponentId: z.string().min(1, "sourceComponentId 不能为空"),
-    timestamp: z.string().min(1, "时间戳不能为空"),
-    context: z.record(z.string(), z.unknown()),
-    wantResponse: z.boolean().optional(),
-    actionId: z.string().optional(),
-  }).strict(),
-}).strict();
+export const A2uiClientActionSchema = z
+  .object({
+    version: z.literal(SPEC_VERSION),
+    action: z
+      .object({
+        name: z.string().min(1, "action 名称不能为空"),
+        surfaceId: z.string().min(1, "surfaceId 不能为空"),
+        sourceComponentId: z.string().min(1, "sourceComponentId 不能为空"),
+        timestamp: z.string().min(1, "时间戳不能为空"),
+        context: z.record(z.string(), z.unknown()),
+        wantResponse: z.boolean().optional(),
+        actionId: z.string().optional(),
+      })
+      .strict(),
+  })
+  .strict();
 
 // ============================================================================
 // functionResponse 模式
@@ -46,14 +50,18 @@ export const A2uiClientActionSchema = z.object({
  * 响应服务端 callFunction 消息的结果。
  * functionCallId 和 call 必须与请求一致。
  */
-export const A2uiClientFunctionResponseSchema = z.object({
-  version: z.literal(SPEC_VERSION),
-  functionResponse: z.object({
-    functionCallId: z.string().min(1, "functionCallId 不能为空"),
-    call: z.string().min(1, "函数名不能为空"),
-    value: z.unknown(),
-  }).strict(),
-}).strict();
+export const A2uiClientFunctionResponseSchema = z
+  .object({
+    version: z.literal(SPEC_VERSION),
+    functionResponse: z
+      .object({
+        functionCallId: z.string().min(1, "functionCallId 不能为空"),
+        call: z.string().min(1, "函数名不能为空"),
+        value: z.unknown(),
+      })
+      .strict(),
+  })
+  .strict();
 
 // ============================================================================
 // error 模式
@@ -65,16 +73,18 @@ export const A2uiClientFunctionResponseSchema = z.object({
  * 报告客户端侧的验证失败或运行时错误。
  * code 为错误类型，message 为错误描述。
  */
-export const A2uiClientErrorSchema = z.object({
-  version: z.literal(SPEC_VERSION),
-  error: z.object({
-    code: z.string().min(1, "错误码不能为空"),
-    message: z.string(),
-    surfaceId: z.string().optional(),
-    path: z.string().optional(),
-    functionCallId: z.string().optional(),
-  }),
-}).strict();
+export const A2uiClientErrorSchema = z
+  .object({
+    version: z.literal(SPEC_VERSION),
+    error: z.object({
+      code: z.string().min(1, "错误码不能为空"),
+      message: z.string(),
+      surfaceId: z.string().optional(),
+      path: z.string().optional(),
+      functionCallId: z.string().optional(),
+    }),
+  })
+  .strict();
 
 // ============================================================================
 // 客户端消息联合模式

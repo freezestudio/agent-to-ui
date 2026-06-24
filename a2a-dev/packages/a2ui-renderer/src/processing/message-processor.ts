@@ -67,10 +67,12 @@ export class MessageProcessor {
       const msg = messages[i];
       try {
         if ("createSurface" in msg) {
-          this.processCreateSurface(msg.createSurface as CreateSurfaceMessage & {
-            components?: unknown[];
-            dataModel?: Record<string, unknown>;
-          });
+          this.processCreateSurface(
+            msg.createSurface as CreateSurfaceMessage & {
+              components?: unknown[];
+              dataModel?: Record<string, unknown>;
+            },
+          );
         } else if ("updateComponents" in msg) {
           this.processUpdateComponents(msg.updateComponents as UpdateComponentsMessage);
         } else if ("updateDataModel" in msg) {
@@ -133,7 +135,10 @@ export class MessageProcessor {
       return;
     }
 
-    logger.debug({ surfaceId: payload.surfaceId, count: payload.components.length }, "处理 updateComponents");
+    logger.debug(
+      { surfaceId: payload.surfaceId, count: payload.components.length },
+      "处理 updateComponents",
+    );
 
     for (const comp of payload.components) {
       const def = comp as { id: string; component: string } & Record<string, unknown>;
